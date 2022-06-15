@@ -28,6 +28,30 @@ const SHADOW_COLOR = "rgba(0, 0, 0, 0.75)";
 
 const BORDER_OFFSET = 1;
 
+const angle2Deg = (angle) => {
+  return angle * (180 / Math.PI);
+};
+
+const angle2Rads = (angle) => {
+  return angle / (180 / Math.PI);
+};
+
+const getFullAngle = (x, y, angle) => {
+  const ang = angle2Deg(angle);
+
+  if (x > 0 && y > 0) {
+    return angle;
+  }
+  if (x <= 0 && y > 0) {
+    return angle2Rads(180 + ang);
+  }
+  if (x <= 0 && y <= 0) {
+    return angle2Rads(180 + ang);
+  }
+
+  return angle2Rads(360 + ang);
+};
+
 const calcShadow = (event) => {
   for (let i = 0; i < eyes.length; i++) {
     const eye = eyes[i];
@@ -45,8 +69,8 @@ const calcShadow = (event) => {
     // solve trig
     const opposite = eyeBound.top + deltaRadius - y;
     const adjacent = x - (eyeBound.left + deltaRadius);
-    const angle = Math.atan(opposite / adjacent);
-    const angleRads = Math.round(angle * (180 / Math.PI));
+    let angle = Math.atan(opposite / adjacent);
+    angle = getFullAngle(adjacent, opposite, angle);
 
     const yMax = deltaRadius * Math.sin(angle);
     const xMax = deltaRadius * Math.cos(angle);
@@ -54,31 +78,10 @@ const calcShadow = (event) => {
     // closer!
     debug.textContent = `x ${Math.round(xMax)} - y ${Math.round(
       yMax
-    )} angle ${angleRads}deg`;
+    )} angle ${Math.round(angle2Deg(angle))}deg `;
 
-    const maxHeight = eyeBound.height - innerBound.height - BORDER_OFFSET;
-    const isMaxHeight = y > eyeBound.bottom - innerBound.height;
-    const isMinHeight = y < eyeBound.top;
-
-    const maxWidth = eyeBound.width - innerBound.width - BORDER_OFFSET;
-    const isMaxWidth = x > eyeBound.right - innerBound.width;
-    const isMinWidth = x < eyeBound.left;
-
-    // need to keep the inner within the eye's border radius
-    const eyeHeightPosition = eyeBound.height - (eyeBound.bottom - y);
-    const eyeWidthPosition = eyeBound.width - (eyeBound.right - x);
-
-    const eyeTop = isMaxHeight
-      ? maxHeight
-      : isMinHeight
-      ? -BORDER_OFFSET
-      : eyeHeightPosition;
-
-    const eyeLeft = isMaxWidth
-      ? maxWidth
-      : isMinWidth
-      ? -BORDER_OFFSET
-      : eyeWidthPosition;
+    const eyeTop = deltaRadius - yMax;
+    const eyeLeft = deltaRadius + xMax;
 
     inner.style["top"] = `${eyeTop}px`;
     inner.style["left"] = `${eyeLeft}px`;
