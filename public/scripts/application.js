@@ -61,24 +61,23 @@ const calcShadow = (event) => {
 
     const innerRadius = innerBound.width / 2;
     const radius = eyeBound.width / 2;
-    const deltaRadius = radius - innerRadius;
 
     const y = event.pageY - innerRadius;
     const x = event.pageX - innerRadius;
+    const mouseRadius = Math.sqrt(
+      (y - eyeBound.top + radius) ** 2 + (x - eyeBound.left + radius) ** 2
+    );
 
-    // solve trig
+    const deltaRadius = Math.min(radius - innerRadius, mouseRadius);
+
     const opposite = eyeBound.top + deltaRadius - y;
     const adjacent = x - (eyeBound.left + deltaRadius);
+
     let angle = Math.atan(opposite / adjacent);
     angle = getFullAngle(adjacent, opposite, angle);
 
     const yMax = deltaRadius * Math.sin(angle);
     const xMax = deltaRadius * Math.cos(angle);
-
-    // closer!
-    debug.textContent = `x ${Math.round(xMax)} - y ${Math.round(
-      yMax
-    )} angle ${Math.round(angle2Deg(angle))}deg `;
 
     const eyeTop = deltaRadius - yMax;
     const eyeLeft = deltaRadius + xMax;
