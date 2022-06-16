@@ -62,10 +62,11 @@ const calcShadow = (event) => {
     const innerRadius = innerBound.width / 2;
     const radius = eyeBound.width / 2;
 
-    const y = event.pageY - innerRadius;
     const x = event.pageX - innerRadius;
+    const y = event.pageY - innerRadius;
     const mouseRadius = Math.sqrt(
-      (y - eyeBound.top + radius) ** 2 + (x - eyeBound.left + radius) ** 2
+      (eyeBound.top + radius - event.pageY) ** 2 +
+        (eyeBound.left + radius - event.pageX) ** 2
     );
 
     const deltaRadius = Math.min(radius - innerRadius, mouseRadius);
