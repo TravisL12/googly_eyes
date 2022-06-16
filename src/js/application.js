@@ -20,13 +20,7 @@ const throttle = (func, limit) => {
   };
 };
 
-const eyes = document.querySelectorAll(".eye");
-const debug = document.querySelector(".debug");
 const THROTTLE_DELAY = 10;
-const SHADOW_LENGTH = 50;
-const SHADOW_COLOR = "rgba(0, 0, 0, 0.75)";
-
-const BORDER_OFFSET = 1;
 
 const angle2Deg = (angle) => {
   return angle * (180 / Math.PI);
@@ -53,6 +47,8 @@ const getFullAngle = (x, y, angle) => {
 };
 
 const calcShadow = (event) => {
+  const eyes = document.querySelectorAll(".eye");
+
   for (let i = 0; i < eyes.length; i++) {
     const eye = eyes[i];
     const inner = eye.querySelector(".inner");
