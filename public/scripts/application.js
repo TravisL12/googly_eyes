@@ -64,27 +64,32 @@ const calcShadow = (event) => {
 
     const x = event.pageX - innerRadius;
     const y = event.pageY - innerRadius;
-    const mouseRadius = Math.sqrt(
-      (eyeBound.top + radius - event.pageY) ** 2 +
-        (eyeBound.left + radius - event.pageX) ** 2
-    );
 
-    const deltaRadius = Math.min(radius - innerRadius, mouseRadius);
+    const mouseX = x - eyeBound.left - innerRadius;
+    const mouseY = y - eyeBound.top - innerRadius;
+    const mouseRadius = Math.sqrt(mouseX ** 2 + mouseY ** 2);
 
-    const opposite = eyeBound.top + deltaRadius - y;
-    const adjacent = x - (eyeBound.left + deltaRadius);
+    const deltaRadius = radius - innerRadius;
 
-    let angle = Math.atan(opposite / adjacent);
-    angle = getFullAngle(adjacent, opposite, angle);
+    if (deltaRadius > mouseRadius) {
+      inner.style["left"] = `${mouseX + innerRadius}px`;
+      inner.style["top"] = `${mouseY + innerRadius}px`;
+    } else {
+      const opposite = eyeBound.top + deltaRadius - y;
+      const adjacent = x - (eyeBound.left + deltaRadius);
 
-    const yMax = deltaRadius * Math.sin(angle);
-    const xMax = deltaRadius * Math.cos(angle);
+      let angle = Math.atan(opposite / adjacent);
+      angle = getFullAngle(adjacent, opposite, angle);
 
-    const eyeTop = deltaRadius - yMax;
-    const eyeLeft = deltaRadius + xMax;
+      const yMax = deltaRadius * Math.sin(angle);
+      const xMax = deltaRadius * Math.cos(angle);
 
-    inner.style["top"] = `${eyeTop}px`;
-    inner.style["left"] = `${eyeLeft}px`;
+      const eyeTop = deltaRadius - yMax;
+      const eyeLeft = deltaRadius + xMax;
+
+      inner.style["top"] = `${eyeTop}px`;
+      inner.style["left"] = `${eyeLeft}px`;
+    }
   }
 };
 
