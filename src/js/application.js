@@ -93,7 +93,9 @@ const calcShadow = (event) => {
   }
 };
 
-document.body.addEventListener(
-  "mousemove",
-  throttle(calcShadow, THROTTLE_DELAY)
-);
+export const initMouseListener = () => {
+  document.body.addEventListener(
+    "mousemove",
+    throttle(calcShadow, THROTTLE_DELAY)
+  );
+};
