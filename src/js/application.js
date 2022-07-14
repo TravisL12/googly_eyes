@@ -26,7 +26,6 @@ class GooglyEyes {
     this.face.append(this.image);
     this.face.append(leftEye);
     this.face.append(rightEye);
-    // image.remove();
     this.container.append(this.face);
   }
 
