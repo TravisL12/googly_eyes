@@ -50,8 +50,9 @@ export const generateElement = ({ tag, className } = { tag: "div" }) => {
   return el;
 };
 
-export const generateEye = (side) => {
+export const generateEye = (leftPos, side) => {
   const eye = generateElement({ tag: "div", className: `eye ${side}` });
+  eye.style.left = `${leftPos}px`;
   eye.innerHTML = '<div class="inner"></div>';
   return eye;
 };

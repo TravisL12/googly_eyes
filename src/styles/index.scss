@@ -19,29 +19,18 @@
 }
 
 .face {
-  position: relative;
-  border: 1px solid;
-  padding: 10px;
-  border-radius: 10px;
+  position: absolute;
+  display: flex;
+  align-items: center;
 }
 
 .eye {
-  position: absolute;
+  position: relative;
   background: white;
   width: var(--eye-size);
   height: var(--eye-size);
-  margin: auto;
   border: 1px solid var(--black);
   border-radius: 50%;
-}
-
-.left {
-  left: 340px;
-  top: 250px;
-}
-.right {
-  left: 460px;
-  top: 250px;
 }
 
 .inner {

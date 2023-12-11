@@ -17,13 +17,16 @@ export const initMouseListener = (container) => {
 
 class GooglyEyes {
   constructor(image, container) {
-    this.image = image;
     this.container = container;
     this.face = generateElement({ tag: "div", className: "face" });
-    const leftEye = generateEye("left");
-    const rightEye = generateEye("right");
+    const leftEye = generateEye(0, "left");
+    const rightEye = generateEye(0, "right");
 
-    this.face.append(this.image);
+    const imgDimensions = image.getBoundingClientRect();
+    this.face.style.top = `${imgDimensions.top + imgDimensions.height / 2}px`;
+    this.face.style.gap = "50px";
+    this.face.style.width = "200px";
+
     this.face.append(leftEye);
     this.face.append(rightEye);
     this.container.append(this.face);
