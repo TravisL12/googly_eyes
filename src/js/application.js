@@ -9,7 +9,7 @@ export const initMouseListener = (container) => {
   );
   document.body.addEventListener("mousemove", (event) => {
     googleEyes.forEach((eye) => {
-      const throttleEye = throttle(eye.calcShadow.bind(eye), THROTTLE_DELAY);
+      const throttleEye = throttle(eye.moveEyes.bind(eye), THROTTLE_DELAY);
       throttleEye(event);
     });
   });
@@ -19,20 +19,21 @@ class GooglyEyes {
   constructor(image, container) {
     this.container = container;
     this.face = generateElement({ tag: "div", className: "face" });
-    const leftEye = generateEye(0, "left");
-    const rightEye = generateEye(0, "right");
 
+    const leftEye = generateEye(80, "left");
+    const rightEye = generateEye(80, "right");
     const imgDimensions = image.getBoundingClientRect();
     this.face.style.top = `${imgDimensions.top + imgDimensions.height / 2}px`;
-    this.face.style.gap = "50px";
-    this.face.style.width = "200px";
+    this.face.style.left = `${imgDimensions.width / 2}px`;
+    this.face.style.gap = "80px";
+    this.face.style.width = "400px";
 
     this.face.append(leftEye);
     this.face.append(rightEye);
     this.container.append(this.face);
   }
 
-  calcShadow(event) {
+  moveEyes(event) {
     const eyes = this.face.querySelectorAll(".eye");
 
     for (let i = 0; i < eyes.length; i++) {
