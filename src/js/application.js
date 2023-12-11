@@ -1,14 +1,23 @@
-import { throttle, getFullAngle, generateElement, generateEye } from "./helper";
-import pico from "picojs";
+import {
+  throttle,
+  getFullAngle,
+  generateElement,
+  generateEye,
+  getFace,
+} from "./helper";
 
 const THROTTLE_DELAY = 10;
 
-export const initMouseListener = (container) => {
+export const initMouseListener = async (container) => {
   const images = document.querySelectorAll("img");
-  const googleEyes = [...images].map((image) => {
-    const ctx = document.createElement("canvas").getContext("2d");
-    image.onload = () => ctx.drawImage(image, 0, 0);
+  const imgData = [...images].map(async (image) => {
+    const img = await getFace(image);
+    return img;
+  });
+  const d = await Promise.all(imgData);
+  console.log(d, "this should be the face coords");
 
+  const googleEyes = [...images].map((image) => {
     return new GooglyEyes(image, container);
   });
   document.body.addEventListener("mousemove", (event) => {
