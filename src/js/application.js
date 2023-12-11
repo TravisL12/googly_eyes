@@ -1,12 +1,16 @@
 import { throttle, getFullAngle, generateElement, generateEye } from "./helper";
+import pico from "picojs";
 
 const THROTTLE_DELAY = 10;
 
 export const initMouseListener = (container) => {
   const images = document.querySelectorAll("img");
-  const googleEyes = [...images].map(
-    (image) => new GooglyEyes(image, container)
-  );
+  const googleEyes = [...images].map((image) => {
+    const ctx = document.createElement("canvas").getContext("2d");
+    image.onload = () => ctx.drawImage(image, 0, 0);
+
+    return new GooglyEyes(image, container);
+  });
   document.body.addEventListener("mousemove", (event) => {
     googleEyes.forEach((eye) => {
       const throttleEye = throttle(eye.moveEyes.bind(eye), THROTTLE_DELAY);
