@@ -1,14 +1,34 @@
-import { throttle, getFullAngle, generateElement, generateEye } from "./helper";
+import {
+  throttle,
+  getFullAngle,
+  generateElement,
+  generateEye,
+  getFace,
+  loadCascade,
+  loadPupil,
+} from "./helper";
 
 const THROTTLE_DELAY = 10;
+const EYE_SIZE = 20; // min size should be 15
 
-export const initMouseListener = (container) => {
+export const initMouseListener = async (container) => {
+  await loadCascade();
+  await loadPupil();
   const images = document.querySelectorAll("img");
-  const googleEyes = [...images].map(
-    (image) => new GooglyEyes(image, container)
+  const imgData = [...images].map(async (image) => {
+    const img = await getFace(image);
+    return img;
+  });
+  const faceCoordinates = await Promise.all(imgData);
+
+  const googleEyes = [...images].map((image, idx) =>
+    faceCoordinates[idx].map((faceData) => {
+      return new GooglyEyes(image, container, faceData);
+    })
   );
+
   document.body.addEventListener("mousemove", (event) => {
-    googleEyes.forEach((eye) => {
+    googleEyes.flat().forEach((eye) => {
       const throttleEye = throttle(eye.moveEyes.bind(eye), THROTTLE_DELAY);
       throttleEye(event);
     });
@@ -16,21 +36,26 @@ export const initMouseListener = (container) => {
 };
 
 class GooglyEyes {
-  constructor(image, container) {
-    this.container = container;
-    this.face = generateElement({ tag: "div", className: "face" });
-
-    const leftEye = generateEye(80, "left");
-    const rightEye = generateEye(80, "right");
+  constructor(image, container, faceData) {
     const imgDimensions = image.getBoundingClientRect();
-    this.face.style.top = `${imgDimensions.top + imgDimensions.height / 2}px`;
-    this.face.style.left = `${imgDimensions.width / 2}px`;
-    this.face.style.gap = "80px";
-    this.face.style.width = "400px";
 
-    this.face.append(leftEye);
-    this.face.append(rightEye);
-    this.container.append(this.face);
+    this.face = generateElement({ tag: "div", className: "face" });
+    this.face.style.top = `${imgDimensions.top}px`;
+    this.face.style.left = `${imgDimensions.left}px`;
+    this.face.style.height = `${imgDimensions.height}px`;
+    this.face.style.width = `${imgDimensions.width}px`;
+
+    const { face, eye1, eye2 } = faceData;
+
+    const eyeSize = face[2] * 0.2;
+    if (eyeSize > 15) {
+      const leftEye = generateEye(eyeSize, eye1);
+      const rightEye = generateEye(eyeSize, eye2);
+
+      this.face.append(leftEye);
+      this.face.append(rightEye);
+      container.append(this.face);
+    }
   }
 
   moveEyes(event) {
