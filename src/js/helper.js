@@ -1,4 +1,5 @@
 import pico from "picojs";
+import lploc from "./lploc";
 
 // https://codeburst.io/throttling-and-debouncing-in-javascript-b01cad5c8edf
 export const throttle = (func, limit) => {
@@ -60,8 +61,11 @@ export const generateEye = (eyeSize, side) => {
   return eye;
 };
 
+// https://github.com/nenadmarkus/picojs/blob/master/examples/image.html
+// everything below is basically from this example
+
 let classifyRegion;
-export const getFace = async (image) => {
+export const loadCascade = async () => {
   const cascadeurl =
     "https://raw.githubusercontent.com/nenadmarkus/pico/c2e81f9d23cc11d1a612fd21e4f9de0921a5d0d9/rnt/cascades/facefinder";
   const data = await fetch(cascadeurl);
@@ -69,11 +73,27 @@ export const getFace = async (image) => {
   const bytes = new Int8Array(buffer);
   classifyRegion = pico.unpack_cascade(bytes);
   console.log("* cascade loaded");
+};
 
-  const ctx = document.createElement("canvas").getContext("2d");
+let pupilLocation; // previously 'do_puploc'
+export const loadPupil = async () => {
+  const puplocurl = "https://drone.nenadmarkus.com/data/blog-stuff/puploc.bin";
+  const data = await fetch(puplocurl);
+  const buffer = await data.arrayBuffer();
+
+  const bytes = new Int8Array(buffer);
+  pupilLocation = lploc.unpack_localizer(bytes);
+  console.log("* puploc loaded");
+};
+
+export const getFace = async (image) => {
+  const canvas = document.createElement("canvas");
+  canvas.height = image.height;
+  canvas.width = image.width;
+  const ctx = canvas.getContext("2d");
 
   ctx.drawImage(image, 0, 0);
-  return buttonCallback(ctx, image);
+  return findFaceData(ctx, image); // previously 'button_callback'
 };
 
 const rgba_to_grayscale = (rgba, nrows, ncols) => {
@@ -88,16 +108,24 @@ const rgba_to_grayscale = (rgba, nrows, ncols) => {
   return gray;
 };
 
-// https://github.com/nenadmarkus/picojs/blob/master/examples/image.html
+const getEye = (r, s, c, imageData) => {
+  const [retina, center] = pupilLocation(r, c, s, 63, imageData);
+  if (retina >= 0 && center >= 0) {
+    return [retina, center];
+  }
+  return;
+};
 
-const buttonCallback = (ctx, img) => {
+const findFaceData = (ctx, img) => {
+  const height = img.height;
+  const width = img.width;
   ctx.drawImage(img, 0, 0);
-  const rgba = ctx.getImageData(0, 0, 480, 360).data;
+  const rgba = ctx.getImageData(0, 0, width, height).data;
   const imageData = {
-    pixels: rgba_to_grayscale(rgba, 360, 480),
-    nrows: 360,
-    ncols: 480,
-    ldim: 480,
+    pixels: rgba_to_grayscale(rgba, height, width),
+    nrows: height,
+    ncols: width,
+    ldim: width,
   };
   const params = {
     shiftfactor: 0.1, // move the detection window by 10% of its size
@@ -112,13 +140,13 @@ const buttonCallback = (ctx, img) => {
 
   const output = [];
   for (let i = 0; i < dets.length; ++i) {
-    if (dets[i][3] > qthresh) {
-      output.push(dets[i]);
-      // ctx.beginPath();
-      // ctx.arc(dets[i][1], dets[i][0], dets[i][2] / 2, 0, 2 * Math.PI, false);
-      // ctx.lineWidth = 3;
-      // ctx.strokeStyle = "red";
-      // ctx.stroke();
+    const face = dets[i];
+    if (face[3] > qthresh) {
+      const r = face[0] - 0.075 * face[2];
+      const s = 0.35 * face[2];
+      const eye1 = getEye(r, s, face[1] - 0.175 * face[2], imageData);
+      const eye2 = getEye(r, s, face[1] + 0.175 * face[2], imageData);
+      output.push({ face, eye1, eye2 });
     }
   }
   return output;

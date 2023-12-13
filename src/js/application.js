@@ -4,24 +4,31 @@ import {
   generateElement,
   generateEye,
   getFace,
+  loadCascade,
+  loadPupil,
 } from "./helper";
 
 const THROTTLE_DELAY = 10;
+const EYE_SIZE = 40;
 
 export const initMouseListener = async (container) => {
+  await loadCascade();
+  await loadPupil();
   const images = document.querySelectorAll("img");
   const imgData = [...images].map(async (image) => {
     const img = await getFace(image);
     return img;
   });
-  const d = await Promise.all(imgData);
-  console.log(d, "this should be the face coords");
+  const faceCoordinates = await Promise.all(imgData);
 
-  const googleEyes = [...images].map((image) => {
-    return new GooglyEyes(image, container);
-  });
+  const googleEyes = [...images].map((image, idx) =>
+    faceCoordinates[idx].map((faceData) => {
+      return new GooglyEyes(image, container, faceData);
+    })
+  );
+
   document.body.addEventListener("mousemove", (event) => {
-    googleEyes.forEach((eye) => {
+    googleEyes.flat().forEach((eye) => {
       const throttleEye = throttle(eye.moveEyes.bind(eye), THROTTLE_DELAY);
       throttleEye(event);
     });
@@ -29,17 +36,21 @@ export const initMouseListener = async (container) => {
 };
 
 class GooglyEyes {
-  constructor(image, container) {
+  constructor(image, container, faceData) {
     this.container = container;
+    console.log(faceData);
     this.face = generateElement({ tag: "div", className: "face" });
 
-    const leftEye = generateEye(80, "left");
-    const rightEye = generateEye(80, "right");
+    const leftEye = generateEye(EYE_SIZE, "left");
+    const rightEye = generateEye(EYE_SIZE, "right");
     const imgDimensions = image.getBoundingClientRect();
-    this.face.style.top = `${imgDimensions.top + imgDimensions.height / 2}px`;
-    this.face.style.left = `${imgDimensions.width / 2}px`;
-    this.face.style.gap = "80px";
-    this.face.style.width = "400px";
+
+    const { face, eye1, eye2 } = faceData;
+    this.face.style.top = `${imgDimensions.top + face[0] - face[2] / 2}px`;
+    this.face.style.left = `${face[1] - face[2] / 2}px`;
+    this.face.style.gap = `${Math.abs(eye1[1] - eye2[1])}px`;
+    this.face.style.height = `${face[2]}px`;
+    this.face.style.width = `${face[2]}px`;
 
     this.face.append(leftEye);
     this.face.append(rightEye);
