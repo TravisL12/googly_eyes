@@ -37,24 +37,25 @@ export const initMouseListener = async (container) => {
 
 class GooglyEyes {
   constructor(image, container, faceData) {
-    this.container = container;
-    this.face = generateElement({ tag: "div", className: "face" });
-
     const imgDimensions = image.getBoundingClientRect();
 
+    this.face = generateElement({ tag: "div", className: "face" });
     this.face.style.top = `${imgDimensions.top}px`;
     this.face.style.left = `${imgDimensions.left}px`;
     this.face.style.height = `${imgDimensions.height}px`;
     this.face.style.width = `${imgDimensions.width}px`;
 
-    console.log(faceData);
-    const { eye1, eye2 } = faceData;
-    const leftEye = generateEye(EYE_SIZE, eye1);
-    const rightEye = generateEye(EYE_SIZE, eye2);
+    const { face, eye1, eye2 } = faceData;
 
-    this.face.append(leftEye);
-    this.face.append(rightEye);
-    this.container.append(this.face);
+    const eyeSize = face[2] * 0.2;
+    if (eyeSize > 15) {
+      const leftEye = generateEye(eyeSize, eye1);
+      const rightEye = generateEye(eyeSize, eye2);
+
+      this.face.append(leftEye);
+      this.face.append(rightEye);
+      container.append(this.face);
+    }
   }
 
   moveEyes(event) {
