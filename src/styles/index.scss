@@ -1,10 +1,23 @@
-@font-face {
-  font-family: "Inter";
-  src: url("../fonts/Inter.ttf");
+$font-size: 1rem;
+$background-color: white;
+$font-color: #dae0e0;
+$page-width: 650px;
+
+html {
+  font-size: $font-size;
+  background: $background-color;
+  color: $font-color;
+  line-height: 1.4;
 }
 
-@import "variables";
-@import "scaffolding";
+body {
+  margin: 0;
+  max-width: $page-width;
+}
+
+h1 {
+  margin: 0 0 2rem;
+}
 
 :root {
   --black: black;
