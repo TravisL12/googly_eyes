@@ -9,7 +9,7 @@ import {
 } from "./helper";
 
 const THROTTLE_DELAY = 10;
-const EYE_SIZE = 40;
+const EYE_SIZE = 20; // min size should be 15
 
 export const initMouseListener = async (container) => {
   await loadCascade();
@@ -38,19 +38,19 @@ export const initMouseListener = async (container) => {
 class GooglyEyes {
   constructor(image, container, faceData) {
     this.container = container;
-    console.log(faceData);
     this.face = generateElement({ tag: "div", className: "face" });
 
-    const leftEye = generateEye(EYE_SIZE, "left");
-    const rightEye = generateEye(EYE_SIZE, "right");
     const imgDimensions = image.getBoundingClientRect();
 
-    const { face, eye1, eye2 } = faceData;
-    this.face.style.top = `${imgDimensions.top + face[0] - face[2] / 2}px`;
-    this.face.style.left = `${face[1] - face[2] / 2}px`;
-    this.face.style.gap = `${Math.abs(eye1[1] - eye2[1])}px`;
-    this.face.style.height = `${face[2]}px`;
-    this.face.style.width = `${face[2]}px`;
+    this.face.style.top = `${imgDimensions.top}px`;
+    this.face.style.left = `${imgDimensions.left}px`;
+    this.face.style.height = `${imgDimensions.height}px`;
+    this.face.style.width = `${imgDimensions.width}px`;
+
+    console.log(faceData);
+    const { eye1, eye2 } = faceData;
+    const leftEye = generateEye(EYE_SIZE, eye1);
+    const rightEye = generateEye(EYE_SIZE, eye2);
 
     this.face.append(leftEye);
     this.face.append(rightEye);

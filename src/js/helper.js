@@ -53,10 +53,15 @@ export const generateElement = ({ tag, className } = { tag: "div" }) => {
   return el;
 };
 
-export const generateEye = (eyeSize, side) => {
-  const eye = generateElement({ tag: "div", className: `eye ${side}` });
+export const generateEye = (eyeSize, eyeData) => {
+  const eye = generateElement({ tag: "div", className: `eye` });
+  const halfEye = eyeSize / 2;
+  const [posTop, posLeft] = eyeData;
+
   eye.style.height = `${eyeSize}px`;
   eye.style.width = `${eyeSize}px`;
+  eye.style.top = `${posTop - halfEye}px`;
+  eye.style.left = `${posLeft - halfEye}px`;
   eye.innerHTML = '<div class="inner"></div>';
   return eye;
 };

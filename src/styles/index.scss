@@ -20,13 +20,11 @@
 
 .face {
   position: absolute;
-  display: flex;
-  align-items: center;
-  background: rgba(0, 0, 0, 0.25);
+  background: rgba(255, 0, 0, 0.25);
 }
 
 .eye {
-  position: relative;
+  position: absolute;
   background: white;
   width: var(--eye-size);
   height: var(--eye-size);
