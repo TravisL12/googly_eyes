@@ -70,26 +70,37 @@ export const generateEye = (eyeSize, eyeData) => {
 // https://github.com/nenadmarkus/picojs/blob/master/examples/image.html
 // everything below is basically from this example
 
+const cascadeurl =
+  "https://raw.githubusercontent.com/nenadmarkus/pico/c2e81f9d23cc11d1a612fd21e4f9de0921a5d0d9/rnt/cascades/facefinder";
+const puplocurl = "https://drone.nenadmarkus.com/data/blog-stuff/puploc.bin";
+export const loadDeps = async () => {
+  const cascadeFetch = fetch(cascadeurl);
+  const pupilFetch = fetch(puplocurl);
+  const [cascResp, pupResp] = await Promise.all([cascadeFetch, pupilFetch]);
+
+  const cascData = loadCascade(cascResp);
+  const pupData = loadPupil(pupResp);
+  await Promise.all([cascData, pupData]);
+  return true;
+};
+
 let classifyRegion;
-export const loadCascade = async () => {
-  const cascadeurl =
-    "https://raw.githubusercontent.com/nenadmarkus/pico/c2e81f9d23cc11d1a612fd21e4f9de0921a5d0d9/rnt/cascades/facefinder";
-  const data = await fetch(cascadeurl);
+const loadCascade = async (data) => {
   const buffer = await data.arrayBuffer();
   const bytes = new Int8Array(buffer);
   classifyRegion = pico.unpack_cascade(bytes);
   console.log("* cascade loaded");
+  return true;
 };
 
 let pupilLocation; // previously 'do_puploc'
-export const loadPupil = async () => {
-  const puplocurl = "https://drone.nenadmarkus.com/data/blog-stuff/puploc.bin";
-  const data = await fetch(puplocurl);
+const loadPupil = async (data) => {
   const buffer = await data.arrayBuffer();
 
   const bytes = new Int8Array(buffer);
   pupilLocation = lploc.unpack_localizer(bytes);
   console.log("* puploc loaded");
+  return true;
 };
 
 export const getFace = async (image) => {
@@ -135,8 +146,8 @@ const findFaceData = (ctx, img) => {
   };
   const params = {
     shiftfactor: 0.1, // move the detection window by 10% of its size
-    minsize: 20, // minimum size of a face (not suitable for real-time detection, set it to 100 in that case)
-    maxsize: 10000, // maximum size of a face
+    minsize: 50, // minimum size of a face (not suitable for real-time detection, set it to 100 in that case)
+    maxsize: 2500, // maximum size of a face
     scalefactor: 1.1, // for multiscale processing: resize the detection window by 10% when moving to the higher scale
   };
 
