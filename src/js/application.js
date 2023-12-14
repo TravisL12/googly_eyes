@@ -75,6 +75,7 @@ class Face {
       const leftEye = generateEye(eyeSize, eye1);
       const rightEye = generateEye(eyeSize, eye2);
 
+      this.eyes = [leftEye, rightEye];
       this.face.append(leftEye);
       this.face.append(rightEye);
       container.append(this.face);
@@ -82,10 +83,10 @@ class Face {
   }
 
   moveEyes(event) {
-    const eyes = this.face.querySelectorAll(".eye");
+    for (let i = 0; i < this.eyes.length; i++) {
+      const eye = this.eyes[i];
+      if (!eye) continue;
 
-    for (let i = 0; i < eyes.length; i++) {
-      const eye = eyes[i];
       const inner = eye.querySelector(".inner");
       const eyeBound = eye.getBoundingClientRect();
       const innerBound = inner.getBoundingClientRect();
