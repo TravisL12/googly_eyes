@@ -111,8 +111,7 @@ class Face {
         const opposite = eyeBound.top + deltaRadius - y;
         const adjacent = x - (eyeBound.left + deltaRadius);
 
-        let angle = Math.atan(opposite / adjacent);
-        angle = getFullAngle(adjacent, opposite, angle);
+        const angle = getFullAngle(adjacent, opposite);
 
         const yMax = deltaRadius * Math.sin(angle);
         const xMax = deltaRadius * Math.cos(angle);

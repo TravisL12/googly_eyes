@@ -31,20 +31,21 @@ const angle2Rads = (angle) => {
   return angle / (180 / Math.PI);
 };
 
-export const getFullAngle = (x, y, angle) => {
-  const ang = angle2Deg(angle);
+export const getFullAngle = (x, y) => {
+  const angle = Math.atan(y / x);
+  const angleDeg = angle2Deg(angle);
 
   if (x > 0 && y > 0) {
     return angle;
   }
   if (x <= 0 && y > 0) {
-    return angle2Rads(180 + ang);
+    return angle2Rads(180 + angleDeg);
   }
   if (x <= 0 && y <= 0) {
-    return angle2Rads(180 + ang);
+    return angle2Rads(180 + angleDeg);
   }
 
-  return angle2Rads(360 + ang);
+  return angle2Rads(360 + angleDeg);
 };
 
 export const generateElement = ({ tag, className } = { tag: "div" }) => {
