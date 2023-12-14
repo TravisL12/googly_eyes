@@ -44,6 +44,15 @@ h1 {
   border-radius: 50%;
 }
 
+.eye-lid {
+  position: absolute;
+  top: 0;
+  width: 100%;
+  background: yellow;
+  border-top-left-radius: 50px;
+  border-top-right-radius: 50px;
+}
+
 .inner {
   top: 0;
   left: 0;

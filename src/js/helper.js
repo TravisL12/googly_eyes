@@ -63,7 +63,8 @@ export const generateEye = (eyeSize, eyeData) => {
   eye.style.width = `${eyeSize}px`;
   eye.style.top = `${docTop + posTop - halfEye}px`;
   eye.style.left = `${posLeft - halfEye}px`;
-  eye.innerHTML = '<div class="inner"></div>';
+  eye.innerHTML = `<div class="inner"></div>`;
+  // <div class="eye-lid" style="height: ${eyeSize / 2}px"></div>
   return eye;
 };
 

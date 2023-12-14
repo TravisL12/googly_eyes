@@ -7,56 +7,58 @@ import {
   loadDeps,
 } from "./helper";
 
-const THROTTLE_DELAY = 10;
+const THROTTLE_DELAY = 30;
 const EYE_MIN = 10;
-const EYE_SIZE_FACTOR = 0.2;
-
-const container = document.querySelector(".container");
-const images = document.querySelectorAll("img");
-
-const removePreviousFaceElements = () => {
-  const faces = document.querySelectorAll(".face");
-  faces.forEach((face) => face.remove());
-};
-
-const drawEyes = (images, faceCoordinates) => {
-  [...images].forEach((image, idx) =>
-    faceCoordinates[idx].forEach((faceData) => {
-      const eye = new GooglyEyes(image, faceData);
-      window.addEventListener("mousemove", (event) => {
-        const throttleEye = throttle(eye.moveEyes.bind(eye), THROTTLE_DELAY);
-        throttleEye(event);
-      });
-    })
-  );
-};
-
-let deps;
-const generateFaceCoordinates = async (images) => {
-  if (!deps) {
-    deps = await loadDeps();
-  }
-  const faceData = [...images].map((image) => getFace(image));
-  return await Promise.all(faceData);
-};
-
-let faceCoordinates;
-export const initGooglyEyes = async () => {
-  console.time("loadEyes");
-  faceCoordinates = await generateFaceCoordinates(images);
-  console.timeEnd("loadEyes");
-  if (faceCoordinates) {
-    drawEyes(images, faceCoordinates);
-  }
-};
-
-window.addEventListener("resize", () => {
-  removePreviousFaceElements();
-  initGooglyEyes();
-});
+const EYE_SIZE_FACTOR = 0.23;
+const EYE_MOVE_EVENTS = ["mousemove", "wheel"];
 
 class GooglyEyes {
-  constructor(image, faceData) {
+  constructor() {
+    this.deps;
+    this.faceCoordinates;
+    this.container = document.querySelector(".container");
+    this.images = document.querySelectorAll("img");
+  }
+
+  removePreviousFaceElements() {
+    const faces = document.querySelectorAll(".face");
+    faces.forEach((face) => face.remove());
+  }
+
+  drawEyes(images, faceCoordinates) {
+    [...images].forEach((image, idx) =>
+      faceCoordinates[idx].forEach((faceData) => {
+        const eye = new Face(image, faceData, this.container);
+        const throttleEye = throttle(eye.moveEyes.bind(eye), THROTTLE_DELAY);
+        EYE_MOVE_EVENTS.forEach((item) => {
+          window.addEventListener(item, (event) => {
+            throttleEye(event);
+          });
+        });
+      })
+    );
+  }
+
+  async generateFaceCoordinates(images) {
+    if (!this.deps) {
+      this.deps = await loadDeps();
+    }
+    const faceData = [...images].map((image) => getFace(image));
+    return await Promise.all(faceData);
+  }
+
+  async init() {
+    console.time("loadEyes");
+    this.faceCoordinates = await this.generateFaceCoordinates(this.images);
+    console.timeEnd("loadEyes");
+    if (this.faceCoordinates) {
+      this.drawEyes(this.images, this.faceCoordinates);
+    }
+  }
+}
+
+class Face {
+  constructor(image, faceData, container) {
     const imgDimensions = image.getBoundingClientRect();
 
     this.face = generateElement({ tag: "div", className: "face" });
@@ -67,6 +69,7 @@ class GooglyEyes {
 
     const { face, eye1, eye2 } = faceData;
 
+    // eye size based on size of face (face[2])
     const eyeSize = face[2] * EYE_SIZE_FACTOR;
     if (eyeSize > EYE_MIN) {
       const leftEye = generateEye(eyeSize, eye1);

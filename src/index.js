@@ -1,5 +1,13 @@
 // Test import of styles
 import "@/styles/index.scss";
-import { initGooglyEyes } from "./js/application";
+import GooglyEyes from "./js/application";
 
-initGooglyEyes();
+(function () {
+  const eyes = new GooglyEyes();
+  eyes.init();
+
+  window.addEventListener("resize", () => {
+    eyes.removePreviousFaceElements();
+    eyes.init();
+  });
+})();
