@@ -9,7 +9,7 @@ import {
 } from "./helper";
 
 const THROTTLE_DELAY = 10;
-const EYE_SIZE = 20; // min size should be 15
+const EYE_MIN = 10;
 
 export const initMouseListener = async (container) => {
   await loadCascade();
@@ -48,7 +48,7 @@ class GooglyEyes {
     const { face, eye1, eye2 } = faceData;
 
     const eyeSize = face[2] * 0.2;
-    if (eyeSize > 15) {
+    if (eyeSize > EYE_MIN) {
       const leftEye = generateEye(eyeSize, eye1);
       const rightEye = generateEye(eyeSize, eye2);
 
@@ -70,8 +70,8 @@ class GooglyEyes {
       const innerRadius = innerBound.width / 2;
       const radius = eyeBound.width / 2;
 
-      const x = event.pageX - innerRadius;
-      const y = event.pageY - innerRadius;
+      const x = event.clientX - innerRadius;
+      const y = event.clientY - innerRadius;
 
       const mouseX = x - eyeBound.left - innerRadius;
       const mouseY = y - eyeBound.top - innerRadius;
@@ -79,7 +79,8 @@ class GooglyEyes {
 
       const deltaRadius = radius - innerRadius;
 
-      if (deltaRadius > mouseRadius) {
+      const isInsideEye = deltaRadius > mouseRadius;
+      if (isInsideEye) {
         inner.style["left"] = `${mouseX + innerRadius}px`;
         inner.style["top"] = `${mouseY + innerRadius}px`;
       } else {

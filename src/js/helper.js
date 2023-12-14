@@ -57,10 +57,11 @@ export const generateEye = (eyeSize, eyeData) => {
   const eye = generateElement({ tag: "div", className: `eye` });
   const halfEye = eyeSize / 2;
   const [posTop, posLeft] = eyeData;
+  const docTop = document.documentElement.scrollTop;
 
   eye.style.height = `${eyeSize}px`;
   eye.style.width = `${eyeSize}px`;
-  eye.style.top = `${posTop - halfEye}px`;
+  eye.style.top = `${docTop + posTop - halfEye}px`;
   eye.style.left = `${posLeft - halfEye}px`;
   eye.innerHTML = '<div class="inner"></div>';
   return eye;
