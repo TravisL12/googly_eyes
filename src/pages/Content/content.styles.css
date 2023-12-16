@@ -1,0 +1,63 @@
+:root {
+  --black: black;
+  --eye-size: 20px;
+  --font-size: 1rem;
+  --background-color: white;
+  --font-color: #dae0e0;
+  --page-width: 650px;
+}
+
+/* html {
+  font-size: var(--font-size);
+  background: var(--background-color);
+  color: var(--font-color);
+  line-height: 1.4;
+}
+
+body {
+  margin: 0;
+  max-width: var(--page-width);
+} */
+
+/* h1 {
+  margin: 0 0 2rem;
+} */
+
+/* .container {
+  display: flex;
+  flex-wrap: wrap;
+  height: 100vh;
+  width: 100vw;
+} */
+
+.googly-eyes.face {
+  position: absolute;
+}
+
+.googly-eyes.face .eye {
+  position: absolute;
+  background: white;
+  width: var(--eye-size);
+  height: var(--eye-size);
+  border: 1px solid var(--black);
+  border-radius: 50%;
+}
+
+.googly-eyes.face .eye-lid {
+  position: absolute;
+  top: 0;
+  width: 100%;
+  background: yellow;
+  border-top-left-radius: 50px;
+  border-top-right-radius: 50px;
+}
+
+.googly-eyes.face .inner {
+  top: 0;
+  left: 0;
+  position: absolute;
+  width: 60%;
+  height: 60%;
+  background: var(--black);
+  border-radius: 50%;
+}
