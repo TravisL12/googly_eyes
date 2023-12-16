@@ -4,7 +4,6 @@ import {
   generateElement,
   generateEye,
   getFace,
-  loadDeps,
 } from './helper';
 
 const THROTTLE_DELAY = 30;
@@ -47,7 +46,6 @@ export default class GooglyEyes {
 
   async init() {
     this.images = document.querySelectorAll('img');
-    console.log(this.images, 'all images');
     this.faceCoordinates = await this.generateFaceCoordinates(this.images);
     if (this.faceCoordinates) {
       this.drawEyes(this.images, this.faceCoordinates);
