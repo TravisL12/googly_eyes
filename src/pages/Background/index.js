@@ -17,7 +17,6 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
 
       const cascBytes = new Int8Array(cascBuffer);
       const pupBytes = new Int8Array(pupBuffer);
-      console.log({ cascBytes, pupBytes });
       resolve({ cascBytes, pupBytes });
     });
 

@@ -90,13 +90,19 @@ const loadPupil = (bytes) => {
 };
 
 export const getFace = async (image) => {
-  const canvas = document.createElement('canvas');
-  canvas.height = image.height;
-  canvas.width = image.width;
-  const ctx = canvas.getContext('2d');
+  const prom = new Promise((resolve) => {
+    image.onload = () => {
+      const canvas = document.createElement('canvas');
+      canvas.height = image.height;
+      canvas.width = image.width;
+      const ctx = canvas.getContext('2d');
 
-  ctx.drawImage(image, 0, 0);
-  return findFaceData(ctx, image); // previously 'button_callback'
+      ctx.drawImage(image, 0, 0);
+      resolve(ctx);
+    };
+  });
+  const respCtx = await prom;
+  return findFaceData(respCtx, image); // previously 'button_callback'
 };
 
 const rgba_to_grayscale = (rgba, nrows, ncols) => {

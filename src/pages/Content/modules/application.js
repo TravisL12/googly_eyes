@@ -16,7 +16,6 @@ export default class GooglyEyes {
   constructor() {
     this.faceCoordinates;
     this.container = document.body;
-    this.images = document.querySelectorAll('img');
   }
 
   removePreviousFaceElements() {
@@ -25,7 +24,7 @@ export default class GooglyEyes {
   }
 
   drawEyes(images, faceCoordinates) {
-    [...images].forEach((image, idx) =>
+    [...images].forEach((image, idx) => {
       faceCoordinates[idx].forEach((faceData) => {
         const eye = new Face(image, faceData, this.container);
         const throttleEye = throttle(eye.moveEyes.bind(eye), THROTTLE_DELAY);
@@ -34,19 +33,22 @@ export default class GooglyEyes {
             throttleEye(event);
           });
         });
-      })
-    );
+      });
+    });
   }
 
   async generateFaceCoordinates(images) {
-    const faceData = [...images].map((image) => getFace(image));
+    const faceData = [...images].map((image) => {
+      image.crossOrigin = 'anonymous';
+      return getFace(image);
+    });
     return await Promise.all(faceData);
   }
 
   async init() {
-    console.time('loadEyes');
+    this.images = document.querySelectorAll('img');
+    console.log(this.images, 'all images');
     this.faceCoordinates = await this.generateFaceCoordinates(this.images);
-    console.timeEnd('loadEyes');
     if (this.faceCoordinates) {
       this.drawEyes(this.images, this.faceCoordinates);
     }
