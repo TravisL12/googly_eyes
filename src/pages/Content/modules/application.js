@@ -1,5 +1,3 @@
-console.log('This is the ApplicationJS');
-
 import {
   throttle,
   getFullAngle,
@@ -16,7 +14,6 @@ const EYE_MOVE_EVENTS = ['mousemove', 'wheel'];
 
 export default class GooglyEyes {
   constructor() {
-    this.deps;
     this.faceCoordinates;
     this.container = document.body;
     this.images = document.querySelectorAll('img');
@@ -42,9 +39,6 @@ export default class GooglyEyes {
   }
 
   async generateFaceCoordinates(images) {
-    if (!this.deps) {
-      this.deps = await loadDeps();
-    }
     const faceData = [...images].map((image) => getFace(image));
     return await Promise.all(faceData);
   }

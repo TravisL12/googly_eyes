@@ -69,37 +69,21 @@ export const generateEye = (eyeSize, eyeData) => {
   return eye;
 };
 
-// https://github.com/nenadmarkus/picojs/blob/master/examples/image.html
-// everything below is basically from this example
-
-const cascadeurl =
-  'https://raw.githubusercontent.com/nenadmarkus/pico/c2e81f9d23cc11d1a612fd21e4f9de0921a5d0d9/rnt/cascades/facefinder';
-const puplocurl = 'https://drone.nenadmarkus.com/data/blog-stuff/puploc.bin';
-export const loadDeps = async () => {
-  const cascadeFetch = fetch(cascadeurl);
-  const pupilFetch = fetch(puplocurl);
-  const [cascResp, pupResp] = await Promise.all([cascadeFetch, pupilFetch]);
-
-  const cascData = loadCascade(cascResp);
-  const pupData = loadPupil(pupResp);
-  await Promise.all([cascData, pupData]);
+export const loadDeps = ({ cascBytes, pupBytes }) => {
+  loadCascade(Object.values(cascBytes));
+  loadPupil(Object.values(pupBytes));
   return true;
 };
 
 let classifyRegion;
-const loadCascade = async (data) => {
-  const buffer = await data.arrayBuffer();
-  const bytes = new Int8Array(buffer);
+const loadCascade = (bytes) => {
   classifyRegion = pico.unpack_cascade(bytes);
   console.log('* cascade loaded');
   return true;
 };
 
-let pupilLocation; // previously 'do_puploc'
-const loadPupil = async (data) => {
-  const buffer = await data.arrayBuffer();
-
-  const bytes = new Int8Array(buffer);
+let pupilLocation;
+const loadPupil = (bytes) => {
   pupilLocation = lploc.unpack_localizer(bytes);
   console.log('* puploc loaded');
   return true;
