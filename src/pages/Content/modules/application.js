@@ -9,12 +9,12 @@ import {
 const THROTTLE_DELAY = 30;
 const EYE_MIN = 10;
 const EYE_SIZE_FACTOR = 0.23;
-const EYE_MOVE_EVENTS = ['mousemove', 'wheel'];
 
 export default class GooglyEyes {
   constructor() {
     this.faceCoordinates;
     this.container = document.body;
+    this.throttledEyes = [];
   }
 
   removePreviousFaceElements() {
@@ -27,18 +27,17 @@ export default class GooglyEyes {
       faceCoordinates[idx].forEach((faceData) => {
         const eye = new Face(image, faceData, this.container);
         const throttleEye = throttle(eye.moveEyes.bind(eye), THROTTLE_DELAY);
-        EYE_MOVE_EVENTS.forEach((item) => {
-          window.addEventListener(item, (event) => {
-            throttleEye(event);
-          });
-        });
+        this.throttledEyes.push(throttleEye);
       });
     });
   }
 
   async generateFaceCoordinates(images) {
     const faceData = [...images].map((image) => {
+      const src = image.src;
+      image.removeAttribute('src');
       image.crossOrigin = 'anonymous';
+      image.src = src;
       return getFace(image);
     });
     return await Promise.all(faceData);

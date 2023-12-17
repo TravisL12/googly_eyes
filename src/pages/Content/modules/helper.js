@@ -129,34 +129,38 @@ const findFaceData = (ctx, img) => {
   const height = img.height;
   const width = img.width;
   ctx.drawImage(img, 0, 0);
-  const rgba = ctx.getImageData(0, 0, width, height).data;
-  const imageData = {
-    pixels: rgba_to_grayscale(rgba, height, width),
-    nrows: height,
-    ncols: width,
-    ldim: width,
-  };
-  const params = {
-    shiftfactor: 0.1, // move the detection window by 10% of its size
-    minsize: 50, // minimum size of a face (not suitable for real-time detection, set it to 100 in that case)
-    maxsize: 2500, // maximum size of a face
-    scalefactor: 1.1, // for multiscale processing: resize the detection window by 10% when moving to the higher scale
-  };
+  try {
+    const rgba = ctx.getImageData(0, 0, width, height).data;
+    const imageData = {
+      pixels: rgba_to_grayscale(rgba, height, width),
+      nrows: height,
+      ncols: width,
+      ldim: width,
+    };
+    const params = {
+      shiftfactor: 0.1, // move the detection window by 10% of its size
+      minsize: 50, // minimum size of a face (not suitable for real-time detection, set it to 100 in that case)
+      maxsize: 2500, // maximum size of a face
+      scalefactor: 1.1, // for multiscale processing: resize the detection window by 10% when moving to the higher scale
+    };
 
-  let dets = pico.run_cascade(imageData, classifyRegion, params);
-  dets = pico.cluster_detections(dets, 0.2); // set IoU threshold to 0.2
-  const qthresh = 5.0; // this constant is empirical: other cascades might require a different one
+    let dets = pico.run_cascade(imageData, classifyRegion, params);
+    dets = pico.cluster_detections(dets, 0.2); // set IoU threshold to 0.2
+    const qthresh = 5.0; // this constant is empirical: other cascades might require a different one
 
-  const output = [];
-  for (let i = 0; i < dets.length; ++i) {
-    const face = dets[i];
-    if (face[3] > qthresh) {
-      const r = face[0] - 0.075 * face[2];
-      const s = 0.35 * face[2];
-      const eye1 = getEye(r, s, face[1] - 0.175 * face[2], imageData);
-      const eye2 = getEye(r, s, face[1] + 0.175 * face[2], imageData);
-      output.push({ face, eye1, eye2 });
+    const output = [];
+    for (let i = 0; i < dets.length; ++i) {
+      const face = dets[i];
+      if (face[3] > qthresh) {
+        const r = face[0] - 0.075 * face[2];
+        const s = 0.35 * face[2];
+        const eye1 = getEye(r, s, face[1] - 0.175 * face[2], imageData);
+        const eye2 = getEye(r, s, face[1] + 0.175 * face[2], imageData);
+        output.push({ face, eye1, eye2 });
+      }
     }
+    return output;
+  } catch (err) {
+    console.log(err, 'cant load image');
   }
-  return output;
 };
