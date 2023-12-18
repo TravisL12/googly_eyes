@@ -4,6 +4,7 @@ import { loadDeps } from './modules/helper';
 console.log('This is the ApplicationJS');
 
 const EYE_MOVE_EVENTS = ['mousemove', 'wheel'];
+let resizeTimeout;
 
 chrome.runtime.sendMessage(
   {
@@ -29,8 +30,11 @@ chrome.runtime.sendMessage(
     observer.observe(document.body, { subtree: true, childList: true });
 
     window.addEventListener('resize', () => {
-      eyes.removePreviousFaceElements();
-      eyes.addImages();
+      clearTimeout(resizeTimeout);
+      resizeTimeout = setTimeout(() => {
+        eyes.removePreviousFaceElements();
+        eyes.addImages();
+      }, 150);
     });
 
     EYE_MOVE_EVENTS.forEach((item) => {
