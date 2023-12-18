@@ -91,18 +91,23 @@ const loadPupil = (bytes) => {
 
 export const getFace = async (image) => {
   const prom = new Promise((resolve) => {
-    image.onload = () => {
+    const makeCanvas = () => {
       const canvas = document.createElement('canvas');
       canvas.height = image.height;
       canvas.width = image.width;
       const ctx = canvas.getContext('2d');
-
       ctx.drawImage(image, 0, 0);
       resolve(ctx);
     };
+    if (image.complete) {
+      makeCanvas();
+    }
+    image.onload = () => {
+      makeCanvas();
+    };
   });
   const respCtx = await prom;
-  return findFaceData(respCtx, image); // previously 'button_callback'
+  return findFaceData(respCtx, image);
 };
 
 const rgba_to_grayscale = (rgba, nrows, ncols) => {

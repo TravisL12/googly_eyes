@@ -12,7 +12,6 @@ const EYE_SIZE_FACTOR = 0.23;
 
 export default class GooglyEyes {
   constructor() {
-    this.faceCoordinates;
     this.container = document.body;
     this.throttledEyes = [];
   }
@@ -20,6 +19,7 @@ export default class GooglyEyes {
   removePreviousFaceElements() {
     const faces = document.querySelectorAll('.face');
     faces.forEach((face) => face.remove());
+    this.throttledEyes = [];
   }
 
   drawEyes(images, faceCoordinates) {
@@ -34,20 +34,17 @@ export default class GooglyEyes {
 
   async generateFaceCoordinates(images) {
     const faceData = [...images].map((image) => {
-      const src = image.src;
-      image.removeAttribute('src');
       image.crossOrigin = 'anonymous';
-      image.src = src;
       return getFace(image);
     });
     return await Promise.all(faceData);
   }
 
-  async init() {
-    this.images = document.querySelectorAll('img');
-    this.faceCoordinates = await this.generateFaceCoordinates(this.images);
-    if (this.faceCoordinates) {
-      this.drawEyes(this.images, this.faceCoordinates);
+  async addImages(addedImages) {
+    const images = Array.from(addedImages || document.querySelectorAll('img'));
+    const faceCoordinates = await this.generateFaceCoordinates(images);
+    if (faceCoordinates) {
+      this.drawEyes(images, faceCoordinates);
     }
   }
 }
