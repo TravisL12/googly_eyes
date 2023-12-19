@@ -30,9 +30,9 @@ chrome.runtime.sendMessage(
     observer.observe(document.body, { subtree: true, childList: true });
 
     window.addEventListener('resize', () => {
+      eyes.removePreviousFaceElements();
       clearTimeout(resizeTimeout);
       resizeTimeout = setTimeout(() => {
-        eyes.removePreviousFaceElements();
         eyes.addImages();
       }, 150);
     });

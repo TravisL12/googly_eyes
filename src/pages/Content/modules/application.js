@@ -1,10 +1,4 @@
-import {
-  throttle,
-  getFullAngle,
-  generateElement,
-  generateEye,
-  getFace,
-} from './helper';
+import { throttle, getFullAngle, generateElement, getFace } from './helper';
 
 const THROTTLE_DELAY = 30;
 const EYE_MIN = 10;
@@ -25,7 +19,8 @@ export default class GooglyEyes {
   drawEyes(images, faceCoordinates) {
     [...images].forEach((image, idx) => {
       faceCoordinates[idx].forEach((faceData) => {
-        const eye = new Face(image, faceData, this.container);
+        const eye = new Face(image, faceData);
+        this.container.append(eye.face);
         const throttleEye = throttle(eye.moveEyes.bind(eye), THROTTLE_DELAY);
         this.throttledEyes.push(throttleEye);
       });
@@ -50,11 +45,12 @@ export default class GooglyEyes {
 }
 
 class Face {
-  constructor(image, faceData, container) {
+  constructor(image, faceData) {
     const imgDimensions = image.getBoundingClientRect();
 
+    const docTop = document.documentElement.scrollTop;
     this.face = generateElement({ tag: 'div', className: 'googly-eyes face' });
-    this.face.style.top = `${imgDimensions.top}px`;
+    this.face.style.top = `${imgDimensions.top + docTop}px`;
     this.face.style.left = `${imgDimensions.left}px`;
     this.face.style.height = `${imgDimensions.height}px`;
     this.face.style.width = `${imgDimensions.width}px`;
@@ -64,14 +60,27 @@ class Face {
     // eye size based on size of face (face[2])
     const eyeSize = face[2] * EYE_SIZE_FACTOR;
     if (eyeSize > EYE_MIN) {
-      const leftEye = generateEye(eyeSize, eye1);
-      const rightEye = generateEye(eyeSize, eye2);
+      const leftEye = this.buildEye(eyeSize, eye1);
+      const rightEye = this.buildEye(eyeSize, eye2);
 
       this.eyes = [leftEye, rightEye];
       this.face.append(leftEye);
       this.face.append(rightEye);
-      container.append(this.face);
     }
+  }
+
+  buildEye(eyeSize, eyeData) {
+    const eye = generateElement({ tag: 'div', className: `eye` });
+    const halfEye = eyeSize / 2;
+    const [posTop, posLeft] = eyeData;
+
+    eye.style.height = `${eyeSize}px`;
+    eye.style.width = `${eyeSize}px`;
+    eye.style.top = `${posTop - halfEye}px`;
+    eye.style.left = `${posLeft - halfEye}px`;
+    eye.innerHTML = `<div class="inner"></div>`;
+    // <div class="eye-lid" style="height: ${eyeSize / 2}px"></div>
+    return eye;
   }
 
   moveEyes(event) {

@@ -54,21 +54,6 @@ export const generateElement = ({ tag, className } = { tag: 'div' }) => {
   return el;
 };
 
-export const generateEye = (eyeSize, eyeData) => {
-  const eye = generateElement({ tag: 'div', className: `eye` });
-  const halfEye = eyeSize / 2;
-  const [posTop, posLeft] = eyeData;
-  const docTop = document.documentElement.scrollTop;
-
-  eye.style.height = `${eyeSize}px`;
-  eye.style.width = `${eyeSize}px`;
-  eye.style.top = `${docTop + posTop - halfEye}px`;
-  eye.style.left = `${posLeft - halfEye}px`;
-  eye.innerHTML = `<div class="inner"></div>`;
-  // <div class="eye-lid" style="height: ${eyeSize / 2}px"></div>
-  return eye;
-};
-
 export const loadDeps = ({ cascBytes, pupBytes }) => {
   loadCascade(Object.values(cascBytes));
   loadPupil(Object.values(pupBytes));
