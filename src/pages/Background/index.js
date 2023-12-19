@@ -21,8 +21,10 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
         return resp.blob();
       })
       .then(async (d) => {
-        const blob = await convertBlobToBase64(d);
-        sendResponse({ blob });
+        // you have to send a base64 string back through response
+        // cause Chrome is stupid and won't let you send actual objects
+        const blob64 = await convertBlobToBase64(d);
+        sendResponse({ blob64 });
       });
   }
 

@@ -74,25 +74,66 @@ const loadPupil = (bytes) => {
   return true;
 };
 
+// https://stackoverflow.com/a/16245768
+const b64toBlob = (data, sliceSize = 512) => {
+  const [contentType, b64Data] = data.split(';base64,');
+
+  const byteCharacters = atob(b64Data);
+  const byteArrays = [];
+
+  for (let offset = 0; offset < byteCharacters.length; offset += sliceSize) {
+    const slice = byteCharacters.slice(offset, offset + sliceSize);
+
+    const byteNumbers = new Array(slice.length);
+    for (let i = 0; i < slice.length; i++) {
+      byteNumbers[i] = slice.charCodeAt(i);
+    }
+
+    const byteArray = new Uint8Array(byteNumbers);
+    byteArrays.push(byteArray);
+  }
+
+  return new Blob(byteArrays, { type: contentType.slice(5) });
+};
+
 export const getFace = async (image) => {
-  const prom = new Promise((resolve) => {
+  const prom = new Promise(async (resolve) => {
     const makeCanvas = () => {
-      const canvas = document.createElement('canvas');
-      canvas.height = image.height;
-      canvas.width = image.width;
-      const ctx = canvas.getContext('2d');
-      ctx.drawImage(image, 0, 0);
-      resolve(ctx);
+      chrome.runtime.sendMessage(
+        {
+          type: 'fetch',
+          url: image.src,
+        },
+        (data) => {
+          const blob = b64toBlob(data.blob64);
+          const urlObj = URL.createObjectURL(blob);
+
+          const img = new Image();
+          img.src = urlObj;
+
+          img.onload = function () {
+            const canvas = document.createElement('canvas');
+            canvas.height = image.height;
+            canvas.width = image.width;
+            URL.revokeObjectURL(img.src);
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0);
+            resolve(ctx.getImageData(0, 0, image.width, image.height).data);
+          };
+        }
+      );
     };
+
     if (image.complete) {
       makeCanvas();
+    } else {
+      image.onload = () => {
+        makeCanvas();
+      };
     }
-    image.onload = () => {
-      makeCanvas();
-    };
   });
-  const respCtx = await prom;
-  return findFaceData(respCtx, image);
+  const imgData = await prom;
+  return findFaceData(imgData, image);
 };
 
 const rgba_to_grayscale = (rgba, nrows, ncols) => {
@@ -115,46 +156,12 @@ const getEye = (r, s, c, imageData) => {
   return;
 };
 
-// this can replace the `getFace` function above I think
-const getImgBase64 = async (url, height, width) => {
-  const prom = new Promise(async (resolve) => {
-    const canv = document.createElement('canvas');
-    chrome.runtime.sendMessage(
-      {
-        type: 'fetch',
-        url,
-      },
-      (data) => {
-        // CONVERT BACK TO BLOB FROM BASE64 HERE!!!!!
-        // const urlObj = URL.createObjectURL(
-        //   new Blob(data.blob.slice(23), { type: 'image/jpeg' })
-        // );
-        // console.log(urlObj);
-        const img = new Image();
-        img.src = data.blob;
-
-        img.onload = function () {
-          URL.revokeObjectURL(img.src);
-          const ctx = canv.getContext('2d');
-          ctx.drawImage(img, 0, 0);
-          resolve(ctx.getImageData(0, 0, width, height).data);
-        };
-      }
-    );
-  });
-  const data = await prom;
-  return data;
-};
-
-const findFaceData = async (ctx, img) => {
-  const height = img.height;
-  const width = img.width;
+const findFaceData = (imgData, image) => {
+  const height = image.height;
+  const width = image.width;
   try {
-    // const rgba = ctx.getImageData(0, 0, width, height).data;
-    const rgba = await getImgBase64(img.src, height, width);
-
     const imageData = {
-      pixels: rgba_to_grayscale(rgba, height, width),
+      pixels: rgba_to_grayscale(imgData, height, width),
       nrows: height,
       ncols: width,
       ldim: width,
