@@ -97,6 +97,7 @@ const b64toBlob = (data, sliceSize = 512) => {
 };
 
 export const getFace = async (image) => {
+  let width, height;
   const prom = new Promise(async (resolve) => {
     const makeCanvas = () => {
       chrome.runtime.sendMessage(
@@ -105,7 +106,10 @@ export const getFace = async (image) => {
           url: image.src,
         },
         (data) => {
-          const { width, height } = image.getBoundingClientRect();
+          const bounding = image.getBoundingClientRect();
+          width = bounding.width;
+          height = bounding.height;
+
           const blob = b64toBlob(data.blob64);
           const urlObj = URL.createObjectURL(blob);
 
@@ -119,7 +123,7 @@ export const getFace = async (image) => {
             URL.revokeObjectURL(img.src);
             const ctx = canvas.getContext('2d');
             ctx.drawImage(img, 0, 0);
-            resolve(ctx.getImageData(0, 0, width, height).data);
+            resolve(ctx);
           };
         }
       );
@@ -133,7 +137,11 @@ export const getFace = async (image) => {
       };
     }
   });
-  const imgData = await prom;
+  const respCtx = await prom;
+  if (width === 0 || height === 0) {
+    return Promise.resolve([]); // I need typescript
+  }
+  const imgData = respCtx.getImageData(0, 0, width, height).data;
   return findFaceData(imgData, image);
 };
 
