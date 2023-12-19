@@ -1,68 +1,60 @@
-import {
-  throttle,
-  getFullAngle,
-  generateElement,
-  generateEye,
-  getFace,
-  loadDeps,
-} from "./helper";
+import { throttle, getFullAngle, generateElement, getFace } from './helper';
 
 const THROTTLE_DELAY = 30;
 const EYE_MIN = 10;
 const EYE_SIZE_FACTOR = 0.23;
-const EYE_MOVE_EVENTS = ["mousemove", "wheel"];
 
-class GooglyEyes {
+const googlyContainer = generateElement({
+  tag: 'div',
+  className: 'googly-eyes',
+});
+document.body.appendChild(googlyContainer);
+
+export default class GooglyEyes {
   constructor() {
-    this.deps;
-    this.faceCoordinates;
-    this.container = document.querySelector(".container");
-    this.images = document.querySelectorAll("img");
+    this.throttledEyes = [];
   }
 
   removePreviousFaceElements() {
-    const faces = document.querySelectorAll(".face");
+    const faces = document.querySelectorAll('.face');
     faces.forEach((face) => face.remove());
+    this.throttledEyes = [];
   }
 
   drawEyes(images, faceCoordinates) {
-    [...images].forEach((image, idx) =>
+    [...images].forEach((image, idx) => {
       faceCoordinates[idx].forEach((faceData) => {
-        const eye = new Face(image, faceData, this.container);
+        const eye = new Face(image, faceData);
+        googlyContainer.append(eye.face);
         const throttleEye = throttle(eye.moveEyes.bind(eye), THROTTLE_DELAY);
-        EYE_MOVE_EVENTS.forEach((item) => {
-          window.addEventListener(item, (event) => {
-            throttleEye(event);
-          });
-        });
-      })
-    );
+        this.throttledEyes.push(throttleEye);
+      });
+    });
   }
 
   async generateFaceCoordinates(images) {
-    if (!this.deps) {
-      this.deps = await loadDeps();
-    }
     const faceData = [...images].map((image) => getFace(image));
-    return await Promise.all(faceData);
+    const faces = await Promise.all(faceData);
+    return faces;
   }
 
-  async init() {
-    console.time("loadEyes");
-    this.faceCoordinates = await this.generateFaceCoordinates(this.images);
-    console.timeEnd("loadEyes");
-    if (this.faceCoordinates) {
-      this.drawEyes(this.images, this.faceCoordinates);
+  async addImages(addedImages) {
+    const images = Array.from(addedImages || document.querySelectorAll('img'));
+    const faceCoordinates = await this.generateFaceCoordinates(images);
+    if (faceCoordinates) {
+      console.log('got faces!');
+      this.drawEyes(images, faceCoordinates);
     }
   }
 }
 
 class Face {
-  constructor(image, faceData, container) {
+  constructor(image, faceData) {
     const imgDimensions = image.getBoundingClientRect();
 
-    this.face = generateElement({ tag: "div", className: "face" });
-    this.face.style.top = `${imgDimensions.top}px`;
+    const docTop = document.documentElement.scrollTop;
+    this.face = generateElement({ tag: 'div', className: 'face' });
+    this.face.style.top = `${imgDimensions.top + docTop}px`;
     this.face.style.left = `${imgDimensions.left}px`;
     this.face.style.height = `${imgDimensions.height}px`;
     this.face.style.width = `${imgDimensions.width}px`;
@@ -72,14 +64,27 @@ class Face {
     // eye size based on size of face (face[2])
     const eyeSize = face[2] * EYE_SIZE_FACTOR;
     if (eyeSize > EYE_MIN) {
-      const leftEye = generateEye(eyeSize, eye1);
-      const rightEye = generateEye(eyeSize, eye2);
+      const leftEye = this.buildEye(eyeSize, eye1);
+      const rightEye = this.buildEye(eyeSize, eye2);
 
       this.eyes = [leftEye, rightEye];
       this.face.append(leftEye);
       this.face.append(rightEye);
-      container.append(this.face);
     }
+  }
+
+  buildEye(eyeSize, eyeData) {
+    const eye = generateElement({ tag: 'div', className: `eye` });
+    const halfEye = eyeSize / 2;
+    const [posTop, posLeft] = eyeData;
+
+    eye.style.height = `${eyeSize}px`;
+    eye.style.width = `${eyeSize}px`;
+    eye.style.top = `${posTop - halfEye}px`;
+    eye.style.left = `${posLeft - halfEye}px`;
+    eye.innerHTML = `<div class="inner"></div>`;
+    // <div class="eye-lid" style="height: ${eyeSize / 2}px"></div>
+    return eye;
   }
 
   moveEyes(event) {
@@ -87,7 +92,7 @@ class Face {
       const eye = this.eyes[i];
       if (!eye) continue;
 
-      const inner = eye.querySelector(".inner");
+      const inner = eye.querySelector('.inner');
       const eyeBound = eye.getBoundingClientRect();
       const innerBound = inner.getBoundingClientRect();
 
@@ -105,8 +110,8 @@ class Face {
 
       const isInsideEye = deltaRadius > mouseRadius;
       if (isInsideEye) {
-        inner.style["left"] = `${mouseX + innerRadius}px`;
-        inner.style["top"] = `${mouseY + innerRadius}px`;
+        inner.style['left'] = `${mouseX + innerRadius}px`;
+        inner.style['top'] = `${mouseY + innerRadius}px`;
       } else {
         const opposite = eyeBound.top + deltaRadius - y;
         const adjacent = x - (eyeBound.left + deltaRadius);
@@ -119,11 +124,9 @@ class Face {
         const eyeTop = deltaRadius - yMax;
         const eyeLeft = deltaRadius + xMax;
 
-        inner.style["top"] = `${eyeTop}px`;
-        inner.style["left"] = `${eyeLeft}px`;
+        inner.style['top'] = `${eyeTop}px`;
+        inner.style['left'] = `${eyeLeft}px`;
       }
     }
   }
 }
-
-export default GooglyEyes;
