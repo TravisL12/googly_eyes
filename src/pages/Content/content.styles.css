@@ -7,11 +7,17 @@
   --page-width: 650px;
 }
 
-.googly-eyes.face {
+.googly-eyes {
+  /* position: absolute; */
+  top: 0;
+  left: 0;
+}
+
+.googly-eyes .face {
   position: absolute;
 }
 
-.googly-eyes.face .eye {
+.googly-eyes .face .eye {
   position: absolute;
   background: white;
   width: var(--eye-size);
@@ -20,7 +26,7 @@
   border-radius: 50%;
 }
 
-.googly-eyes.face .eye-lid {
+.googly-eyes .face .eye-lid {
   position: absolute;
   top: 0;
   width: 100%;
@@ -29,7 +35,7 @@
   border-top-right-radius: 50px;
 }
 
-.googly-eyes.face .inner {
+.googly-eyes .face .inner {
   top: 0;
   left: 0;
   position: absolute;

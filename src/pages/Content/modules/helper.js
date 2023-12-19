@@ -105,6 +105,7 @@ export const getFace = async (image) => {
           url: image.src,
         },
         (data) => {
+          const { width, height } = image.getBoundingClientRect();
           const blob = b64toBlob(data.blob64);
           const urlObj = URL.createObjectURL(blob);
 
@@ -113,12 +114,12 @@ export const getFace = async (image) => {
 
           img.onload = function () {
             const canvas = document.createElement('canvas');
-            canvas.height = image.height;
-            canvas.width = image.width;
+            canvas.height = height;
+            canvas.width = width;
             URL.revokeObjectURL(img.src);
             const ctx = canvas.getContext('2d');
             ctx.drawImage(img, 0, 0);
-            resolve(ctx.getImageData(0, 0, image.width, image.height).data);
+            resolve(ctx.getImageData(0, 0, width, height).data);
           };
         }
       );
@@ -157,8 +158,7 @@ const getEye = (r, s, c, imageData) => {
 };
 
 const findFaceData = (imgData, image) => {
-  const height = image.height;
-  const width = image.width;
+  const { width, height } = image.getBoundingClientRect();
   try {
     const imageData = {
       pixels: rgba_to_grayscale(imgData, height, width),
@@ -190,6 +190,7 @@ const findFaceData = (imgData, image) => {
     }
     return output;
   } catch (err) {
+    console.log('HELLO I AM HEREEEEEEEEE');
     console.log(err, 'cant load image');
   }
 };

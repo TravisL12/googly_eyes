@@ -4,9 +4,14 @@ const THROTTLE_DELAY = 30;
 const EYE_MIN = 10;
 const EYE_SIZE_FACTOR = 0.23;
 
+const googlyContainer = generateElement({
+  tag: 'div',
+  className: 'googly-eyes',
+});
+document.body.appendChild(googlyContainer);
+
 export default class GooglyEyes {
   constructor() {
-    this.container = document.body;
     this.throttledEyes = [];
   }
 
@@ -20,7 +25,7 @@ export default class GooglyEyes {
     [...images].forEach((image, idx) => {
       faceCoordinates[idx].forEach((faceData) => {
         const eye = new Face(image, faceData);
-        this.container.append(eye.face);
+        googlyContainer.append(eye.face);
         const throttleEye = throttle(eye.moveEyes.bind(eye), THROTTLE_DELAY);
         this.throttledEyes.push(throttleEye);
       });
@@ -29,13 +34,15 @@ export default class GooglyEyes {
 
   async generateFaceCoordinates(images) {
     const faceData = [...images].map((image) => getFace(image));
-    return await Promise.all(faceData);
+    const faces = await Promise.all(faceData);
+    return faces;
   }
 
   async addImages(addedImages) {
     const images = Array.from(addedImages || document.querySelectorAll('img'));
     const faceCoordinates = await this.generateFaceCoordinates(images);
     if (faceCoordinates) {
+      console.log('got faces!');
       this.drawEyes(images, faceCoordinates);
     }
   }
@@ -46,7 +53,7 @@ class Face {
     const imgDimensions = image.getBoundingClientRect();
 
     const docTop = document.documentElement.scrollTop;
-    this.face = generateElement({ tag: 'div', className: 'googly-eyes face' });
+    this.face = generateElement({ tag: 'div', className: 'face' });
     this.face.style.top = `${imgDimensions.top + docTop}px`;
     this.face.style.left = `${imgDimensions.left}px`;
     this.face.style.height = `${imgDimensions.height}px`;
