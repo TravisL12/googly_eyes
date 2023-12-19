@@ -28,10 +28,7 @@ export default class GooglyEyes {
   }
 
   async generateFaceCoordinates(images) {
-    const faceData = [...images].map((image) => {
-      image.crossOrigin = 'anonymous';
-      return getFace(image);
-    });
+    const faceData = [...images].map((image) => getFace(image));
     return await Promise.all(faceData);
   }
 

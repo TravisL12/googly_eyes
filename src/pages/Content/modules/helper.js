@@ -115,12 +115,44 @@ const getEye = (r, s, c, imageData) => {
   return;
 };
 
-const findFaceData = (ctx, img) => {
+// this can replace the `getFace` function above I think
+const getImgBase64 = async (url, height, width) => {
+  const prom = new Promise(async (resolve) => {
+    const canv = document.createElement('canvas');
+    chrome.runtime.sendMessage(
+      {
+        type: 'fetch',
+        url,
+      },
+      (data) => {
+        // CONVERT BACK TO BLOB FROM BASE64 HERE!!!!!
+        // const urlObj = URL.createObjectURL(
+        //   new Blob(data.blob.slice(23), { type: 'image/jpeg' })
+        // );
+        // console.log(urlObj);
+        const img = new Image();
+        img.src = data.blob;
+
+        img.onload = function () {
+          URL.revokeObjectURL(img.src);
+          const ctx = canv.getContext('2d');
+          ctx.drawImage(img, 0, 0);
+          resolve(ctx.getImageData(0, 0, width, height).data);
+        };
+      }
+    );
+  });
+  const data = await prom;
+  return data;
+};
+
+const findFaceData = async (ctx, img) => {
   const height = img.height;
   const width = img.width;
-  ctx.drawImage(img, 0, 0);
   try {
-    const rgba = ctx.getImageData(0, 0, width, height).data;
+    // const rgba = ctx.getImageData(0, 0, width, height).data;
+    const rgba = await getImgBase64(img.src, height, width);
+
     const imageData = {
       pixels: rgba_to_grayscale(rgba, height, width),
       nrows: height,
