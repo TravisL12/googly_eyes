@@ -5,7 +5,7 @@ const cascadeurl =
 const puplocurl = 'https://drone.nenadmarkus.com/data/blog-stuff/puploc.bin';
 
 chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
-  if (message.type === 'image') {
+  if (message.type === 'loadFaceModels') {
     const promise = new Promise(async (resolve) => {
       const cascadeFetch = fetch(cascadeurl);
       const pupilFetch = fetch(puplocurl);

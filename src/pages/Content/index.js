@@ -8,7 +8,7 @@ let resizeTimeout;
 
 chrome.runtime.sendMessage(
   {
-    type: 'image',
+    type: 'loadFaceModels',
   },
   (response) => {
     loadDeps(response);
