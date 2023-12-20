@@ -30,10 +30,19 @@ const startEyes = () => {
 
       const mutationObserver = new MutationObserver((mutationList) => {
         mutationList.forEach((listItem) => {
-          const images = Array.from(listItem.addedNodes).filter(
-            (node) => node.nodeName === 'IMG'
+          const imageMap = Array.from(listItem.addedNodes).reduce(
+            (accum, node) => {
+              if (!node?.querySelectorAll) {
+                return accum;
+              }
+              const imgs = node.querySelectorAll('img');
+              accum = accum.concat(Array.from(imgs));
+              return accum;
+            },
+            []
           );
-          images.forEach((image) => {
+
+          imageMap.flat().forEach((image) => {
             intersectObserver.observe(image);
           });
         });
@@ -55,8 +64,8 @@ const startEyes = () => {
 
       EYE_MOVE_EVENTS.forEach((item) => {
         window.addEventListener(item, (event) => {
-          eyes.throttledEyes.forEach((throttleEye) => {
-            throttleEye(event);
+          eyes.throttledEyes.forEach(({ throttleCb }) => {
+            throttleCb(event);
           });
         });
       });

@@ -45,7 +45,10 @@ export default class GooglyEyes {
     faceCoordinates.forEach((faceData) => {
       const eye = new Face(image, faceData);
       googlyContainer.append(eye.face);
-      const throttleEye = throttle(eye.moveEyes.bind(eye), THROTTLE_DELAY);
+      const throttleEye = {
+        imgId: image.getAttribute(IMG_ID_ATTR),
+        throttleCb: throttle(eye.moveEyes.bind(eye), THROTTLE_DELAY),
+      };
       this.throttledEyes.push(throttleEye);
     });
   }
@@ -56,6 +59,9 @@ export default class GooglyEyes {
       `.face[${IMG_ID_ATTR}=${imageId}]`
     );
     if (existingFaces) {
+      this.throttledEyes = this.throttledEyes.filter(
+        (eye) => eye.imgId !== imageId
+      );
       image.removeAttribute(IS_GOOGLY_ATTR);
       image.removeAttribute(IMG_ID_ATTR);
       Array.from(existingFaces).forEach((face) => {
