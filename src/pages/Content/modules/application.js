@@ -1,4 +1,10 @@
-import { throttle, getFullAngle, generateElement, getFace } from './helper';
+import {
+  throttle,
+  getFullAngle,
+  generateElement,
+  getFace,
+  stripPixels,
+} from './helper';
 
 const THROTTLE_DELAY = 30;
 const EYE_MIN = 10;
@@ -42,7 +48,7 @@ export default class GooglyEyes {
     const images = Array.from(addedImages || document.querySelectorAll('img'));
     const faceCoordinates = await this.generateFaceCoordinates(images);
     if (faceCoordinates) {
-      console.log('got faces!');
+      console.log('drawing faces');
       this.drawEyes(images, faceCoordinates);
     }
   }
@@ -51,37 +57,41 @@ export default class GooglyEyes {
 class Face {
   constructor(image, faceData) {
     const imgDimensions = image.getBoundingClientRect();
+    const computed = getComputedStyle(image);
+    const width = computed.width;
 
     const docTop = document.documentElement.scrollTop;
+    this.eyes = [];
     this.face = generateElement({ tag: 'div', className: 'face' });
     this.face.style.top = `${imgDimensions.top + docTop}px`;
     this.face.style.left = `${imgDimensions.left}px`;
-    this.face.style.height = `${imgDimensions.height}px`;
-    this.face.style.width = `${imgDimensions.width}px`;
 
     const { face, eye1, eye2 } = faceData;
 
     // eye size based on size of face (face[2])
-    const eyeSize = face[2] * EYE_SIZE_FACTOR;
+    const scale = stripPixels(width) / image.naturalWidth;
+    const eyeSize = face[2] * EYE_SIZE_FACTOR * scale;
     if (eyeSize > EYE_MIN) {
-      const leftEye = this.buildEye(eyeSize, eye1);
-      const rightEye = this.buildEye(eyeSize, eye2);
+      const leftEye = this.buildEye(eyeSize, eye1, scale);
+      const rightEye = this.buildEye(eyeSize, eye2, scale);
 
       this.eyes = [leftEye, rightEye];
       this.face.append(leftEye);
       this.face.append(rightEye);
+    } else {
+      console.log(eyeSize, image.src, 'eyes too small to draw');
     }
   }
 
-  buildEye(eyeSize, eyeData) {
+  buildEye(eyeSize, eyeData, scale) {
     const eye = generateElement({ tag: 'div', className: `eye` });
     const halfEye = eyeSize / 2;
     const [posTop, posLeft] = eyeData;
 
     eye.style.height = `${eyeSize}px`;
     eye.style.width = `${eyeSize}px`;
-    eye.style.top = `${posTop - halfEye}px`;
-    eye.style.left = `${posLeft - halfEye}px`;
+    eye.style.top = `${scale * (posTop - halfEye)}px`;
+    eye.style.left = `${scale * (posLeft - halfEye)}px`;
     eye.innerHTML = `<div class="inner"></div>`;
     // <div class="eye-lid" style="height: ${eyeSize / 2}px"></div>
     return eye;

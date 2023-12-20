@@ -1,7 +1,7 @@
 import GooglyEyes from './modules/application';
 import { loadDeps } from './modules/helper';
 
-console.log('This is the ApplicationJS');
+// console.log('This is the ApplicationJS');
 
 const EYE_MOVE_EVENTS = ['mousemove', 'wheel'];
 let resizeTimeout;

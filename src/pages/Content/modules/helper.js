@@ -96,6 +96,10 @@ const b64toBlob = (data, sliceSize = 512) => {
   return new Blob(byteArrays, { type: contentType.slice(5) });
 };
 
+export const stripPixels = (value) => {
+  return +value.replace('px', '');
+};
+
 export const getFace = async (image) => {
   let width, height;
   const prom = new Promise(async (resolve) => {
@@ -106,9 +110,9 @@ export const getFace = async (image) => {
           url: image.src,
         },
         (data) => {
-          const bounding = image.getBoundingClientRect();
-          width = bounding.width;
-          height = bounding.height;
+          const computed = getComputedStyle(image);
+          width = stripPixels(computed.width);
+          height = stripPixels(computed.height);
 
           const blob = b64toBlob(data.blob64);
           const urlObj = URL.createObjectURL(blob);
@@ -142,7 +146,7 @@ export const getFace = async (image) => {
     return Promise.resolve([]); // I need typescript
   }
   const imgData = respCtx.getImageData(0, 0, width, height).data;
-  return findFaceData(imgData, image);
+  return findFaceData(imgData, width, height);
 };
 
 const rgba_to_grayscale = (rgba, nrows, ncols) => {
@@ -165,8 +169,7 @@ const getEye = (r, s, c, imageData) => {
   return;
 };
 
-const findFaceData = (imgData, image) => {
-  const { width, height } = image.getBoundingClientRect();
+const findFaceData = (imgData, width, height) => {
   try {
     const imageData = {
       pixels: rgba_to_grayscale(imgData, height, width),
@@ -198,7 +201,6 @@ const findFaceData = (imgData, image) => {
     }
     return output;
   } catch (err) {
-    console.log('HELLO I AM HEREEEEEEEEE');
     console.log(err, 'cant load image');
   }
 };
