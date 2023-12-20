@@ -1,6 +1,6 @@
 import GooglyEyes from './modules/application';
-import { IS_GOOGLY_ATTR } from './modules/constants';
-import { loadDeps } from './modules/helper';
+import { IMG_ID_ATTR } from './modules/constants';
+import { loadDeps, shuffle } from './modules/helper';
 
 const EYE_MOVE_EVENTS = ['mousemove', 'wheel'];
 let resizeTimeout;
@@ -12,13 +12,12 @@ const startEyes = () => {
     },
     (response) => {
       loadDeps(response);
-      const eyes = new GooglyEyes();
 
       const intersectObserver = new IntersectionObserver(
         (entries) => {
-          entries.forEach((entry) => {
+          shuffle(entries).forEach((entry) => {
             const { isIntersecting, target } = entry;
-            if (isIntersecting && !target.hasAttribute(IS_GOOGLY_ATTR)) {
+            if (isIntersecting && !target.hasAttribute(IMG_ID_ATTR)) {
               eyes.drawEyes(target);
             } else {
               eyes.undraw(target);
@@ -36,8 +35,7 @@ const startEyes = () => {
                 return accum;
               }
               const imgs = node.querySelectorAll('img');
-              accum = accum.concat(Array.from(imgs));
-              return accum;
+              return accum.concat(Array.from(imgs));
             },
             []
           );
@@ -52,13 +50,14 @@ const startEyes = () => {
         childList: true,
       });
 
-      eyes.initialLoad(intersectObserver);
+      const eyes = new GooglyEyes(intersectObserver);
+      eyes.initialLoad();
 
       window.addEventListener('resize', () => {
         eyes.removePreviousFaceElements();
         clearTimeout(resizeTimeout);
         resizeTimeout = setTimeout(() => {
-          eyes.initialLoad(intersectObserver);
+          eyes.initialLoad();
         }, 150);
       });
 

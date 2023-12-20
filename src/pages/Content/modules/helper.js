@@ -1,6 +1,22 @@
 import pico from 'picojs';
 import lploc from './lploc';
 
+export const shuffle = (array) => {
+  let currentIndex = array.length;
+  let temporaryValue;
+  let randomIndex;
+
+  while (0 !== currentIndex) {
+    randomIndex = Math.floor(Math.random() * currentIndex);
+    currentIndex -= 1;
+    temporaryValue = array[currentIndex];
+    array[currentIndex] = array[randomIndex];
+    array[randomIndex] = temporaryValue;
+  }
+
+  return array;
+};
+
 const letters = 'abcdefghijklmnopqrstuvwxyz';
 export const randomImgId = () => {
   let word = '';
@@ -57,9 +73,12 @@ export const getFullAngle = (x, y) => {
   return angle2Rads(360 + angleDeg);
 };
 
-export const generateElement = ({ tag, className } = { tag: 'div' }) => {
+export const generateElement = (
+  { tag, className, attributes } = { tag: 'div' }
+) => {
   const el = document.createElement(tag);
   el.className = className;
+  attributes?.forEach(({ attr, value }) => el.setAttribute(attr, value));
   return el;
 };
 

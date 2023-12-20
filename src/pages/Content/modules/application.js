@@ -11,9 +11,10 @@ import {
   THROTTLE_DELAY,
   EYE_MIN,
   EYE_SIZE_FACTOR,
-  IS_GOOGLY_ATTR,
   IMG_ID_ATTR,
 } from './constants';
+
+const PICTURE_LIMIT = 10;
 
 const googlyContainer = generateElement({
   tag: 'div',
@@ -22,33 +23,37 @@ const googlyContainer = generateElement({
 document.body.appendChild(googlyContainer);
 
 export default class GooglyEyes {
-  constructor() {
+  constructor(intersectObserver) {
     this.throttledEyes = [];
+    this.intersectObserver = intersectObserver;
   }
 
-  initialLoad(intersectObserver) {
+  initialLoad() {
     const startImages = document.querySelectorAll('img');
     startImages.forEach((image) => {
-      intersectObserver.observe(image);
+      this.intersectObserver.observe(image);
     });
   }
 
   async drawEyes(image) {
-    const imgId = randomImgId();
-    image.setAttribute(IS_GOOGLY_ATTR, true);
-    image.setAttribute(IMG_ID_ATTR, imgId);
-
     const faceCoordinates = await getFace(image);
-    if (!faceCoordinates) {
+    const isOverMax =
+      this.throttledEyes.length + faceCoordinates.length > PICTURE_LIMIT;
+
+    if (!faceCoordinates || isOverMax) {
       return;
     }
+
+    const imgId = randomImgId();
+    image.setAttribute(IMG_ID_ATTR, imgId);
     faceCoordinates.forEach((faceData) => {
       const eye = new Face(image, faceData);
       googlyContainer.append(eye.face);
       const throttleEye = {
-        imgId: image.getAttribute(IMG_ID_ATTR),
+        imgId,
         throttleCb: throttle(eye.moveEyes.bind(eye), THROTTLE_DELAY),
       };
+
       this.throttledEyes.push(throttleEye);
     });
   }
@@ -62,7 +67,6 @@ export default class GooglyEyes {
       this.throttledEyes = this.throttledEyes.filter(
         (eye) => eye.imgId !== imageId
       );
-      image.removeAttribute(IS_GOOGLY_ATTR);
       image.removeAttribute(IMG_ID_ATTR);
       Array.from(existingFaces).forEach((face) => {
         face.remove();
@@ -71,14 +75,11 @@ export default class GooglyEyes {
   }
 
   removePreviousFaceElements() {
-    const faces = document.querySelectorAll('.face');
-    faces.forEach((face) => face.remove()); // delete eyes
-
     const existingGooglyImages = document.querySelectorAll(
-      `img[${IS_GOOGLY_ATTR}="true"]`
+      `img[${IMG_ID_ATTR}]`
     );
     Array.from(existingGooglyImages).forEach((image) => {
-      image.removeAttribute(IS_GOOGLY_ATTR); // reset image element
+      this.undraw(image);
     });
     this.throttledEyes = [];
   }
@@ -93,8 +94,11 @@ class Face {
 
     const docTop = document.documentElement.scrollTop;
     this.eyes = [];
-    this.face = generateElement({ tag: 'div', className: 'face' });
-    this.face.setAttribute(IMG_ID_ATTR, imageId); // associate with image
+    this.face = generateElement({
+      tag: 'div',
+      className: 'face',
+      attributes: [{ attr: IMG_ID_ATTR, value: imageId }],
+    });
     this.face.style.top = `${imgDimensions.top + docTop}px`;
     this.face.style.left = `${imgDimensions.left}px`;
 
