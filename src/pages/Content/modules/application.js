@@ -27,29 +27,24 @@ export default class GooglyEyes {
     this.throttledEyes = [];
   }
 
-  drawEyes(images, faceCoordinates) {
-    [...images].forEach((image, idx) => {
-      faceCoordinates[idx].forEach((faceData) => {
-        const eye = new Face(image, faceData);
-        googlyContainer.append(eye.face);
-        const throttleEye = throttle(eye.moveEyes.bind(eye), THROTTLE_DELAY);
-        this.throttledEyes.push(throttleEye);
-      });
+  async drawEyes(image) {
+    const faceCoordinates = await getFace(image);
+    if (!faceCoordinates) {
+      return;
+    }
+    faceCoordinates.forEach((faceData) => {
+      const eye = new Face(image, faceData);
+      googlyContainer.append(eye.face);
+      const throttleEye = throttle(eye.moveEyes.bind(eye), THROTTLE_DELAY);
+      this.throttledEyes.push(throttleEye);
     });
   }
 
-  async generateFaceCoordinates(images) {
-    const faceData = [...images].map((image) => getFace(image));
-    const faces = await Promise.all(faceData);
-    return faces;
-  }
-
-  async addImages(addedImages) {
+  addImages(addedImages) {
     const images = Array.from(addedImages || document.querySelectorAll('img'));
-    const faceCoordinates = await this.generateFaceCoordinates(images);
-    if (faceCoordinates) {
-      console.log('drawing faces');
-      this.drawEyes(images, faceCoordinates);
+    for (let i = 0; i < images.length; i++) {
+      const image = images[i];
+      this.drawEyes(image);
     }
   }
 }

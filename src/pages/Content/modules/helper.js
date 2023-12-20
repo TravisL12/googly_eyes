@@ -102,51 +102,53 @@ export const stripPixels = (value) => {
 
 export const getFace = async (image) => {
   let width, height;
-  const prom = new Promise(async (resolve) => {
-    const makeCanvas = () => {
-      chrome.runtime.sendMessage(
-        {
-          type: 'fetch',
-          url: image.src,
-        },
-        (data) => {
-          const computed = getComputedStyle(image);
-          width = stripPixels(computed.width);
-          height = stripPixels(computed.height);
+  try {
+    const prom = new Promise(async (resolve) => {
+      const makeCanvas = () => {
+        chrome.runtime.sendMessage(
+          {
+            type: 'fetch',
+            url: image.src,
+          },
+          (data) => {
+            const computed = getComputedStyle(image);
+            width = stripPixels(computed.width);
+            height = stripPixels(computed.height);
 
-          const blob = b64toBlob(data.blob64);
-          const urlObj = URL.createObjectURL(blob);
+            const blob = b64toBlob(data.blob64);
+            const urlObj = URL.createObjectURL(blob);
 
-          const img = new Image();
-          img.src = urlObj;
+            const img = new Image();
+            img.src = urlObj;
 
-          img.onload = function () {
-            const canvas = document.createElement('canvas');
-            canvas.height = height;
-            canvas.width = width;
-            URL.revokeObjectURL(img.src);
-            const ctx = canvas.getContext('2d');
-            ctx.drawImage(img, 0, 0);
-            resolve(ctx);
-          };
-        }
-      );
-    };
-
-    if (image.complete) {
-      makeCanvas();
-    } else {
-      image.onload = () => {
-        makeCanvas();
+            img.onload = function () {
+              const canvas = document.createElement('canvas');
+              canvas.height = height;
+              canvas.width = width;
+              URL.revokeObjectURL(img.src);
+              const ctx = canvas.getContext('2d');
+              ctx.drawImage(img, 0, 0);
+              resolve(ctx);
+            };
+          }
+        );
       };
-    }
-  });
-  const respCtx = await prom;
-  if (width === 0 || height === 0) {
+
+      if (image.complete) {
+        makeCanvas();
+      } else {
+        image.onload = () => {
+          makeCanvas();
+        };
+      }
+    });
+    const respCtx = await prom;
+    const imgData = respCtx.getImageData(0, 0, width, height).data;
+    return findFaceData(imgData, width, height);
+  } catch (err) {
+    console.log(err, 'canvas loading error');
     return Promise.resolve([]); // I need typescript
   }
-  const imgData = respCtx.getImageData(0, 0, width, height).data;
-  return findFaceData(imgData, width, height);
 };
 
 const rgba_to_grayscale = (rgba, nrows, ncols) => {
