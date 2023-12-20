@@ -1,6 +1,15 @@
 import pico from 'picojs';
 import lploc from './lploc';
 
+const letters = 'abcdefghijklmnopqrstuvwxyz';
+export const randomImgId = () => {
+  let word = '';
+  for (let i = 0; i < 10; i++) {
+    word += letters[Math.floor(Math.random() * letters.length)];
+  }
+  return word;
+};
+
 // https://codeburst.io/throttling-and-debouncing-in-javascript-b01cad5c8edf
 export const throttle = (func, limit) => {
   let lastFunc;

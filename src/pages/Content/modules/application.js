@@ -4,11 +4,16 @@ import {
   generateElement,
   getFace,
   stripPixels,
+  randomImgId,
 } from './helper';
 
-const THROTTLE_DELAY = 30;
-const EYE_MIN = 10;
-const EYE_SIZE_FACTOR = 0.23;
+import {
+  THROTTLE_DELAY,
+  EYE_MIN,
+  EYE_SIZE_FACTOR,
+  IS_GOOGLY_ATTR,
+  IMG_ID_ATTR,
+} from './constants';
 
 const googlyContainer = generateElement({
   tag: 'div',
@@ -21,13 +26,18 @@ export default class GooglyEyes {
     this.throttledEyes = [];
   }
 
-  removePreviousFaceElements() {
-    const faces = document.querySelectorAll('.face');
-    faces.forEach((face) => face.remove());
-    this.throttledEyes = [];
+  initialLoad(intersectObserver) {
+    const startImages = document.querySelectorAll('img');
+    startImages.forEach((image) => {
+      intersectObserver.observe(image);
+    });
   }
 
   async drawEyes(image) {
+    const imgId = randomImgId();
+    image.setAttribute(IS_GOOGLY_ATTR, true);
+    image.setAttribute(IMG_ID_ATTR, imgId);
+
     const faceCoordinates = await getFace(image);
     if (!faceCoordinates) {
       return;
@@ -40,12 +50,31 @@ export default class GooglyEyes {
     });
   }
 
-  addImages(addedImages) {
-    const images = Array.from(addedImages || document.querySelectorAll('img'));
-    for (let i = 0; i < images.length; i++) {
-      const image = images[i];
-      this.drawEyes(image);
+  undraw(image) {
+    const imageId = image.getAttribute(IMG_ID_ATTR);
+    const existingFaces = document.querySelectorAll(
+      `.face[${IMG_ID_ATTR}=${imageId}]`
+    );
+    if (existingFaces) {
+      image.removeAttribute(IS_GOOGLY_ATTR);
+      image.removeAttribute(IMG_ID_ATTR);
+      Array.from(existingFaces).forEach((face) => {
+        face.remove();
+      });
     }
+  }
+
+  removePreviousFaceElements() {
+    const faces = document.querySelectorAll('.face');
+    faces.forEach((face) => face.remove()); // delete eyes
+
+    const existingGooglyImages = document.querySelectorAll(
+      `img[${IS_GOOGLY_ATTR}="true"]`
+    );
+    Array.from(existingGooglyImages).forEach((image) => {
+      image.removeAttribute(IS_GOOGLY_ATTR); // reset image element
+    });
+    this.throttledEyes = [];
   }
 }
 
@@ -54,10 +83,12 @@ class Face {
     const imgDimensions = image.getBoundingClientRect();
     const computed = getComputedStyle(image);
     const width = computed.width;
+    const imageId = image.getAttribute(IMG_ID_ATTR);
 
     const docTop = document.documentElement.scrollTop;
     this.eyes = [];
     this.face = generateElement({ tag: 'div', className: 'face' });
+    this.face.setAttribute(IMG_ID_ATTR, imageId); // associate with image
     this.face.style.top = `${imgDimensions.top + docTop}px`;
     this.face.style.left = `${imgDimensions.left}px`;
 
@@ -73,8 +104,6 @@ class Face {
       this.eyes = [leftEye, rightEye];
       this.face.append(leftEye);
       this.face.append(rightEye);
-    } else {
-      console.log(eyeSize, image.src, 'eyes too small to draw');
     }
   }
 
