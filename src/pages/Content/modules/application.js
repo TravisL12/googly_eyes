@@ -5,6 +5,7 @@ import {
   getFace,
   stripPixels,
   randomImgId,
+  randomizer,
 } from './helper';
 
 import {
@@ -14,6 +15,7 @@ import {
   IMG_ID_ATTR,
   EYELID_MAX_PERC,
   PICTURE_LIMIT,
+  EYE_TYPES,
 } from './constants';
 
 const googlyContainer = generateElement({
@@ -108,8 +110,9 @@ class Face {
     const scale = stripPixels(width) / image.naturalWidth;
     const eyeSize = face[2] * EYE_SIZE_FACTOR * scale;
     if (eyeSize > EYE_MIN) {
-      const leftEye = new Eye(eyeSize, eye1, scale, false);
-      const rightEye = new Eye(eyeSize, eye2, scale, false);
+      const type = EYE_TYPES[0]; //EYE_TYPES[randomizer(EYE_TYPES.length - 1)];
+      const leftEye = new Eye(eyeSize, eye1, scale, type, false);
+      const rightEye = new Eye(eyeSize, eye2, scale, type, false);
 
       this.eyes = [leftEye, rightEye];
       this.face.append(leftEye.eye);
@@ -168,8 +171,9 @@ class Face {
 }
 
 class Eye {
-  constructor(eyeSize, eyeData, scale, hasEyeLids = true) {
+  constructor(eyeSize, eyeData, scale, eyeType, hasEyeLids = true) {
     this.eye = generateElement({ tag: 'div', className: `eye` });
+    this.type = eyeType;
     const halfEye = eyeSize / 2;
     const [posTop, posLeft] = eyeData;
 
@@ -178,7 +182,10 @@ class Eye {
     this.eye.style.top = `${scale * (posTop - halfEye)}px`;
     this.eye.style.left = `${scale * (posLeft - halfEye)}px`;
 
-    this.inner = generateElement({ tag: 'div', className: `inner` });
+    this.inner = generateElement({
+      tag: 'div',
+      className: `inner ${this.type}`,
+    });
 
     this.lid = generateElement({ tag: 'div', className: `eye-lid` });
     this.lid.style.height = `${EYELID_MAX_PERC}%`;

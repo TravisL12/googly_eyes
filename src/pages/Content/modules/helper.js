@@ -1,6 +1,10 @@
 import pico from 'picojs';
 import lploc from './lploc';
 
+export function randomizer(max = 1, min = 0) {
+  return Math.round(Math.random() * (max - min) + min);
+}
+
 export const shuffle = (array) => {
   let currentIndex = array.length;
   let temporaryValue;

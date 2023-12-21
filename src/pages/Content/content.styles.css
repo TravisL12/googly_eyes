@@ -46,11 +46,24 @@
   width: 60%;
   height: 60%;
   background: var(--black);
-  /* background: radial-gradient(
-    circle,
-    var(--black) 40%,
-    var(--mid-eye) 50%,
-    var(--blue) 100%
-  ); */
   border-radius: 50%;
+}
+
+.googly-eyes .face .inner.blue {
+  background: var(--blue);
+}
+.googly-eyes .face .inner.glam {
+  background: var(--glam);
+}
+.googly-eyes .face .inner.stoned {
+  background: var(--stoned);
+}
+.googly-eyes .face .inner.sleepy {
+  background: var(--sleepy);
+}
+.googly-eyes .face .inner.droopy {
+  background: var(--droopy);
+}
+.googly-eyes .face .inner.cat {
+  background: var(--cat);
 }
