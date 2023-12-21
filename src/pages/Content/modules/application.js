@@ -13,9 +13,8 @@ import {
   EYE_SIZE_FACTOR,
   IMG_ID_ATTR,
   EYELID_MAX_PERC,
+  PICTURE_LIMIT,
 } from './constants';
-
-const PICTURE_LIMIT = 10;
 
 const googlyContainer = generateElement({
   tag: 'div',

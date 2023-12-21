@@ -15,9 +15,7 @@ const startEyes = () => {
 
       const intersectObserver = new IntersectionObserver(
         (entries) => {
-          const inter = entries.filter(
-            (e) => e.isIntersecting && !e.target.hasAttribute(IMG_ID_ATTR)
-          );
+          const inter = entries.filter((e) => e.isIntersecting);
           shuffle(inter).forEach((entry) => {
             eyes.drawEyes(entry.target);
           });
