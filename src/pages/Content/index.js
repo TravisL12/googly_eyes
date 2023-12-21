@@ -1,4 +1,4 @@
-import GooglyEyes from './modules/application';
+import EyesController from './modules/application';
 import { IMG_ID_ATTR } from './modules/constants';
 import { loadDeps, shuffle } from './modules/helper';
 
@@ -15,13 +15,16 @@ const startEyes = () => {
 
       const intersectObserver = new IntersectionObserver(
         (entries) => {
-          shuffle(entries).forEach((entry) => {
-            const { isIntersecting, target } = entry;
-            if (isIntersecting && !target.hasAttribute(IMG_ID_ATTR)) {
-              eyes.drawEyes(target);
-            } else {
-              eyes.undraw(target);
-            }
+          const inter = entries.filter(
+            (e) => e.isIntersecting && !e.target.hasAttribute(IMG_ID_ATTR)
+          );
+          shuffle(inter).forEach((entry) => {
+            eyes.drawEyes(entry.target);
+          });
+
+          const notInter = entries.filter((e) => !e.isIntersecting);
+          notInter.forEach((entry) => {
+            eyes.undraw(entry.target);
           });
         },
         { threshold: 0.2 }
@@ -50,7 +53,7 @@ const startEyes = () => {
         childList: true,
       });
 
-      const eyes = new GooglyEyes(intersectObserver);
+      const eyes = new EyesController(intersectObserver);
       eyes.initialLoad();
 
       window.addEventListener('resize', () => {

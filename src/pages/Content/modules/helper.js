@@ -179,7 +179,7 @@ export const getFace = async (image) => {
   }
 };
 
-const rgba_to_grayscale = (rgba, nrows, ncols) => {
+const rgbaToGrayscale = (rgba, nrows, ncols) => {
   var gray = new Uint8Array(nrows * ncols);
   for (let r = 0; r < nrows; ++r)
     for (let c = 0; c < ncols; ++c)
@@ -202,7 +202,7 @@ const getEye = (r, s, c, imageData) => {
 const findFaceData = (imgData, width, height) => {
   try {
     const imageData = {
-      pixels: rgba_to_grayscale(imgData, height, width),
+      pixels: rgbaToGrayscale(imgData, height, width),
       nrows: height,
       ncols: width,
       ldim: width,

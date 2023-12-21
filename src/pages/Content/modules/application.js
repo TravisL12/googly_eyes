@@ -12,6 +12,7 @@ import {
   EYE_MIN,
   EYE_SIZE_FACTOR,
   IMG_ID_ATTR,
+  EYELID_MAX_PERC,
 } from './constants';
 
 const PICTURE_LIMIT = 10;
@@ -22,7 +23,7 @@ const googlyContainer = generateElement({
 });
 document.body.appendChild(googlyContainer);
 
-export default class GooglyEyes {
+export default class EyesController {
   constructor(intersectObserver) {
     this.throttledEyes = [];
     this.intersectObserver = intersectObserver;
@@ -108,35 +109,22 @@ class Face {
     const scale = stripPixels(width) / image.naturalWidth;
     const eyeSize = face[2] * EYE_SIZE_FACTOR * scale;
     if (eyeSize > EYE_MIN) {
-      const leftEye = this.buildEye(eyeSize, eye1, scale);
-      const rightEye = this.buildEye(eyeSize, eye2, scale);
+      const leftEye = new Eye(eyeSize, eye1, scale, false);
+      const rightEye = new Eye(eyeSize, eye2, scale, false);
 
       this.eyes = [leftEye, rightEye];
-      this.face.append(leftEye);
-      this.face.append(rightEye);
+      this.face.append(leftEye.eye);
+      this.face.append(rightEye.eye);
     }
-  }
-
-  buildEye(eyeSize, eyeData, scale) {
-    const eye = generateElement({ tag: 'div', className: `eye` });
-    const halfEye = eyeSize / 2;
-    const [posTop, posLeft] = eyeData;
-
-    eye.style.height = `${eyeSize}px`;
-    eye.style.width = `${eyeSize}px`;
-    eye.style.top = `${scale * (posTop - halfEye)}px`;
-    eye.style.left = `${scale * (posLeft - halfEye)}px`;
-    eye.innerHTML = `<div class="inner"></div>`;
-    // <div class="eye-lid" style="height: ${eyeSize / 2}px"></div>
-    return eye;
   }
 
   moveEyes(event) {
     for (let i = 0; i < this.eyes.length; i++) {
-      const eye = this.eyes[i];
-      if (!eye) continue;
+      const eyeObj = this.eyes[i];
+      if (!eyeObj) continue;
 
-      const inner = eye.querySelector('.inner');
+      const { eye, inner, lid } = eyeObj;
+
       const eyeBound = eye.getBoundingClientRect();
       const innerBound = inner.getBoundingClientRect();
 
@@ -168,9 +156,38 @@ class Face {
         const eyeTop = deltaRadius - yMax;
         const eyeLeft = deltaRadius + xMax;
 
+        lid.style.height = `${Math.min(
+          EYELID_MAX_PERC,
+          100 * ((eyeTop + eyeTop - 0.1) / stripPixels(eye.style.height))
+        )}%`;
+
         inner.style['top'] = `${eyeTop}px`;
         inner.style['left'] = `${eyeLeft}px`;
       }
     }
+  }
+}
+
+class Eye {
+  constructor(eyeSize, eyeData, scale, hasEyeLids = true) {
+    this.eye = generateElement({ tag: 'div', className: `eye` });
+    const halfEye = eyeSize / 2;
+    const [posTop, posLeft] = eyeData;
+
+    this.eye.style.height = `${eyeSize}px`;
+    this.eye.style.width = `${eyeSize}px`;
+    this.eye.style.top = `${scale * (posTop - halfEye)}px`;
+    this.eye.style.left = `${scale * (posLeft - halfEye)}px`;
+
+    this.inner = generateElement({ tag: 'div', className: `inner` });
+
+    this.lid = generateElement({ tag: 'div', className: `eye-lid` });
+    this.lid.style.height = `${EYELID_MAX_PERC}%`;
+
+    if (hasEyeLids) {
+      this.eye.appendChild(this.lid);
+    }
+
+    this.eye.appendChild(this.inner);
   }
 }

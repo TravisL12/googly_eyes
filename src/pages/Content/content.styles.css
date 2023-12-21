@@ -1,10 +1,15 @@
 :root {
   --black: black;
-  --eye-size: 20px;
-  --font-size: 1rem;
-  --background-color: white;
-  --font-color: #dae0e0;
   --page-width: 650px;
+  --eye-size: 20px;
+
+  --mid-eye: #6e7b7d;
+  --blue: #1bafdd;
+  --glam: pink;
+  --stoned: lightblue;
+  --sleepy: green;
+  --droopy: magenta;
+  --cat: purple;
 }
 
 .googly-eyes .face {
@@ -18,15 +23,20 @@
   height: var(--eye-size);
   border: 1px solid var(--black);
   border-radius: 50%;
+  /* box-shadow: 0 0 8px 3px rgba(0, 0, 0, 0.5) inset; */
 }
 
 .googly-eyes .face .eye-lid {
   position: absolute;
   top: 0;
   width: 100%;
-  background: yellow;
   border-top-left-radius: 50px;
   border-top-right-radius: 50px;
+  background: radial-gradient(
+    circle,
+    rgba(97, 97, 97, 1) 0%,
+    rgba(0, 0, 0, 1) 100%
+  );
 }
 
 .googly-eyes .face .inner {
@@ -36,5 +46,11 @@
   width: 60%;
   height: 60%;
   background: var(--black);
+  /* background: radial-gradient(
+    circle,
+    var(--black) 40%,
+    var(--mid-eye) 50%,
+    var(--blue) 100%
+  ); */
   border-radius: 50%;
 }
