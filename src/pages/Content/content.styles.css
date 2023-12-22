@@ -29,14 +29,21 @@
 .googly-eyes .face .eye-lid {
   position: absolute;
   top: 0;
+  height: 100%;
   width: 100%;
-  border-top-left-radius: 50px;
-  border-top-right-radius: 50px;
   background: radial-gradient(
     circle,
-    rgba(97, 97, 97, 1) 0%,
-    rgba(0, 0, 0, 1) 100%
+    rgb(254, 190, 190) 0%,
+    rgb(245, 211, 176) 100%
   );
+}
+
+.googly-eyes .face .eye-lid-open {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  width: 100%;
+  background: white;
 }
 
 .googly-eyes .face .inner {
@@ -45,6 +52,7 @@
   position: absolute;
   width: 60%;
   height: 60%;
+  z-index: 1;
   background: var(--black);
   border-radius: 50%;
 }

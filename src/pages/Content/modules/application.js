@@ -125,7 +125,7 @@ class Face {
       const eyeObj = this.eyes[i];
       if (!eyeObj) continue;
 
-      const { eye, inner, lid } = eyeObj;
+      const { eye, inner, lidOpen } = eyeObj;
 
       const eyeBound = eye.getBoundingClientRect();
       const innerBound = inner.getBoundingClientRect();
@@ -158,10 +158,11 @@ class Face {
         const eyeTop = deltaRadius - yMax;
         const eyeLeft = deltaRadius + xMax;
 
-        lid.style.height = `${Math.min(
-          EYELID_MAX_PERC,
-          100 * ((eyeTop + eyeTop - 0.1) / stripPixels(eye.style.height))
-        )}%`;
+        const lidHeight = 100 * (eyeTop / eyeBound.height);
+
+        const openPerc = Math.min(100, lidHeight);
+        lidOpen.style.height = `${EYELID_MAX_PERC - openPerc}%`;
+        lidOpen.style.top = `${openPerc}%`;
 
         inner.style['top'] = `${eyeTop}px`;
         inner.style['left'] = `${eyeLeft}px`;
@@ -187,13 +188,19 @@ class Eye {
       className: `inner ${this.type}`,
     });
 
-    this.lid = generateElement({ tag: 'div', className: `eye-lid` });
-    this.lid.style.height = `${EYELID_MAX_PERC}%`;
+    const lid = generateElement({ tag: 'div', className: `eye-lid` });
+    lid.style.height = `${EYELID_MAX_PERC}%`;
+    lid.style.borderRadius = `${eyeSize}px ${eyeSize}px 0 0`;
 
-    if (hasEyeLids) {
-      this.eye.appendChild(this.lid);
-    }
+    this.lidOpen = generateElement({ tag: 'div', className: `eye-lid-open` });
+    this.lidOpen.style.height = `${EYELID_MAX_PERC}%`;
+    this.lidOpen.style.borderRadius = `${eyeSize}px ${eyeSize}px 0 0`;
 
     this.eye.appendChild(this.inner);
+
+    if (hasEyeLids) {
+      this.eye.appendChild(lid);
+      this.eye.appendChild(this.lidOpen);
+    }
   }
 }
