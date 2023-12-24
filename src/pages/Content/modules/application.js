@@ -111,8 +111,8 @@ class Face {
     const eyeSize = face[2] * EYE_SIZE_FACTOR * scale;
     if (eyeSize > EYE_MIN) {
       const type = EYE_TYPES[0]; //EYE_TYPES[randomizer(EYE_TYPES.length - 1)];
-      const leftEye = new Eye(eyeSize, eye1, scale, type, false);
-      const rightEye = new Eye(eyeSize, eye2, scale, type, false);
+      const leftEye = new Eye(eyeSize, eye1, scale, type, true);
+      const rightEye = new Eye(eyeSize, eye2, scale, type, true);
 
       this.eyes = [leftEye, rightEye];
       this.face.append(leftEye.eye);
@@ -130,8 +130,9 @@ class Face {
       const eyeBound = eye.getBoundingClientRect();
       const innerBound = inner.getBoundingClientRect();
 
+      // subtract 1 to account for the 1px border around the eye
+      const radius = eyeBound.width / 2 - 1;
       const innerRadius = innerBound.width / 2;
-      const radius = eyeBound.width / 2;
 
       const x = event.clientX - innerRadius;
       const y = event.clientY - innerRadius;
@@ -155,8 +156,15 @@ class Face {
         const yMax = deltaRadius * Math.sin(angle);
         const xMax = deltaRadius * Math.cos(angle);
 
-        const eyeTop = deltaRadius - yMax;
         const eyeLeft = deltaRadius + xMax;
+
+        const isAtBottom = yMax === -1 * deltaRadius;
+        const isAtTop = yMax === deltaRadius;
+        const eyeTop = isAtBottom
+          ? 0
+          : isAtTop
+          ? 2 * deltaRadius
+          : deltaRadius - yMax;
 
         const lidHeight = 100 * (eyeTop / eyeBound.height);
 
@@ -189,7 +197,7 @@ class Eye {
     });
 
     const lid = generateElement({ tag: 'div', className: `eye-lid` });
-    lid.style.height = `${EYELID_MAX_PERC}%`;
+    lid.style.height = `${EYELID_MAX_PERC - 1}%`;
     lid.style.borderRadius = `${eyeSize}px ${eyeSize}px 0 0`;
 
     this.lidOpen = generateElement({ tag: 'div', className: `eye-lid-open` });
