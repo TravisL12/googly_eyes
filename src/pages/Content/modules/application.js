@@ -130,8 +130,7 @@ class Face {
       const eyeBound = eye.getBoundingClientRect();
       const innerBound = inner.getBoundingClientRect();
 
-      // subtract 1 to account for the 1px border around the eye
-      const radius = eyeBound.width / 2 - 1;
+      const radius = eyeBound.width / 2;
       const innerRadius = innerBound.width / 2;
 
       const x = event.clientX - innerRadius;
