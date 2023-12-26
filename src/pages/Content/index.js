@@ -1,5 +1,9 @@
 import EyesController from './modules/application';
-import { HAS_EYELIDS } from './modules/constants';
+import {
+  HAS_EYELIDS,
+  PICTURE_LIMIT,
+  PICTURE_LIMIT_SETTING,
+} from './modules/constants';
 import { loadDeps, shuffle } from './modules/helper';
 import { getStorage } from './modules/storageHelper';
 
@@ -54,18 +58,23 @@ const startEyes = () => {
 
       const eyesControl = new EyesController(intersectObserver);
       getStorage((options) => {
-        const isOn = options[HAS_EYELIDS];
-        eyesControl.initialLoad(isOn);
+        eyesControl.initialLoad(options);
       });
 
       chrome.storage.onChanged.addListener((changes) => {
-        const isOn = changes[HAS_EYELIDS].newValue;
-        eyesControl[HAS_EYELIDS] = isOn;
-        eyesControl.faces.forEach(({ face }) => {
-          const [leftEye, rightEye] = face.eyes;
-          leftEye.toggleEyeLids(isOn);
-          rightEye.toggleEyeLids(isOn);
-        });
+        if (changes[PICTURE_LIMIT_SETTING]) {
+          eyesControl[PICTURE_LIMIT] = changes[PICTURE_LIMIT_SETTING].newValue;
+        }
+
+        if (changes[HAS_EYELIDS]) {
+          const isOn = changes[HAS_EYELIDS].newValue;
+          eyesControl[HAS_EYELIDS] = isOn;
+          eyesControl.faces.forEach(({ face }) => {
+            const [leftEye, rightEye] = face.eyes;
+            leftEye.toggleEyeLids(isOn);
+            rightEye.toggleEyeLids(isOn);
+          });
+        }
       });
 
       window.addEventListener('resize', () => {

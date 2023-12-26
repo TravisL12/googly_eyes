@@ -3,7 +3,7 @@ export const EYE_MIN = 10;
 export const EYE_SIZE_FACTOR = 0.23;
 export const IMG_ID_ATTR = 'googly-img-id';
 export const EYELID_MAX_PERC = 50;
-export const PICTURE_LIMIT = 10;
+export const PICTURE_LIMIT = 15;
 
 const NORMAL_EYE = 'normal';
 const BLUE_EYE = 'blue';
@@ -24,5 +24,5 @@ export const EYE_TYPES = [
 
 // storage options
 export const HAS_EYELIDS = 'hasEyelids';
-
-export const SETTING_VALUES = [HAS_EYELIDS];
+export const PICTURE_LIMIT_SETTING = 'facesWithEyesLimit';
+export const SETTING_VALUES = [HAS_EYELIDS, PICTURE_LIMIT_SETTING];
