@@ -1,5 +1,4 @@
 import EyesController from './modules/application';
-import { IMG_ID_ATTR } from './modules/constants';
 import { loadDeps, shuffle } from './modules/helper';
 
 const EYE_MOVE_EVENTS = ['mousemove', 'wheel'];

@@ -110,9 +110,9 @@ class Face {
     const scale = stripPixels(width) / image.naturalWidth;
     const eyeSize = face[2] * EYE_SIZE_FACTOR * scale;
     if (eyeSize > EYE_MIN) {
-      const type = EYE_TYPES[0]; //EYE_TYPES[randomizer(EYE_TYPES.length - 1)];
-      const leftEye = new Eye(eyeSize, eye1, scale, type, true);
-      const rightEye = new Eye(eyeSize, eye2, scale, type, true);
+      const type = EYE_TYPES[0]; // EYE_TYPES[randomizer(EYE_TYPES.length - 1)];
+      const leftEye = new Eye(eyeSize, eye1, scale, type, false);
+      const rightEye = new Eye(eyeSize, eye2, scale, type, false);
 
       this.eyes = [leftEye, rightEye];
       this.face.append(leftEye.eye);
@@ -180,8 +180,8 @@ class Face {
 
 class Eye {
   constructor(eyeSize, eyeData, scale, eyeType, hasEyeLids = true) {
-    this.eye = generateElement({ tag: 'div', className: `eye` });
-    this.type = eyeType;
+    this.type = eyeType || '';
+    this.eye = generateElement({ tag: 'div', className: `eye ${this.type}` });
     const halfEye = eyeSize / 2;
     const [posTop, posLeft] = eyeData;
 
@@ -192,22 +192,27 @@ class Eye {
 
     this.inner = generateElement({
       tag: 'div',
-      className: `inner ${this.type}`,
+      className: `inner`,
     });
 
-    const lid = generateElement({ tag: 'div', className: `eye-lid` });
+    const lidClass = hasEyeLids ? '' : 'none';
+    const lid = generateElement({
+      tag: 'div',
+      className: `eye-lid ${lidClass}`,
+    });
     lid.style.height = `${EYELID_MAX_PERC - 1}%`;
     lid.style.borderRadius = `${eyeSize}px ${eyeSize}px 0 0`;
 
-    this.lidOpen = generateElement({ tag: 'div', className: `eye-lid-open` });
+    this.lidOpen = generateElement({
+      tag: 'div',
+      className: `eye-lid-open ${lidClass}`,
+    });
     this.lidOpen.style.height = `${EYELID_MAX_PERC}%`;
     this.lidOpen.style.borderRadius = `${eyeSize}px ${eyeSize}px 0 0`;
 
     this.eye.appendChild(this.inner);
 
-    if (hasEyeLids) {
-      this.eye.appendChild(lid);
-      this.eye.appendChild(this.lidOpen);
-    }
+    this.eye.appendChild(lid);
+    this.eye.appendChild(this.lidOpen);
   }
 }
