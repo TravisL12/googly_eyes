@@ -21,3 +21,8 @@ export const EYE_TYPES = [
   DROOPY_EYE,
   CAT_EYE,
 ];
+
+// storage options
+export const HAS_EYELIDS = 'hasEyelids';
+
+export const SETTING_VALUES = [HAS_EYELIDS];

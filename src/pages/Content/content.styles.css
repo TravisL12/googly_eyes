@@ -25,6 +25,7 @@
     height: var(--eye-size);
     border-radius: 50%;
     box-shadow: 0 0 0 1px var(--transparent-light-black);
+    z-index: 10;
 
     .none {
       display: none;
@@ -51,7 +52,7 @@
       position: absolute;
       width: 60%;
       height: 60%;
-      z-index: 1;
+      z-index: 11;
       border-radius: 50%;
     }
 

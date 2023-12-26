@@ -16,6 +16,7 @@ import {
   EYELID_MAX_PERC,
   PICTURE_LIMIT,
   EYE_TYPES,
+  HAS_EYELIDS,
 } from './constants';
 
 const googlyContainer = generateElement({
@@ -26,11 +27,13 @@ document.body.appendChild(googlyContainer);
 
 export default class EyesController {
   constructor(intersectObserver) {
-    this.throttledEyes = [];
+    this.faces = [];
     this.intersectObserver = intersectObserver;
+    this[HAS_EYELIDS] = false;
   }
 
-  initialLoad() {
+  initialLoad(isEyelidsOn) {
+    this[HAS_EYELIDS] = isEyelidsOn || this[HAS_EYELIDS];
     const startImages = document.querySelectorAll('img');
     startImages.forEach((image) => {
       this.intersectObserver.observe(image);
@@ -40,7 +43,7 @@ export default class EyesController {
   async drawEyes(image) {
     const faceCoordinates = await getFace(image);
     const isOverMax =
-      this.throttledEyes.length + faceCoordinates.length > PICTURE_LIMIT;
+      this.faces.length + faceCoordinates.length > PICTURE_LIMIT;
 
     if (!faceCoordinates || isOverMax) {
       return;
@@ -49,14 +52,15 @@ export default class EyesController {
     const imgId = randomImgId();
     image.setAttribute(IMG_ID_ATTR, imgId);
     faceCoordinates.forEach((faceData) => {
-      const eye = new Face(image, faceData);
-      googlyContainer.append(eye.face);
-      const throttleEye = {
+      const face = new Face(image, faceData, this[HAS_EYELIDS]);
+      googlyContainer.append(face.container);
+      const faceItem = {
         imgId,
-        throttleCb: throttle(eye.moveEyes.bind(eye), THROTTLE_DELAY),
+        face,
+        throttleCb: throttle(face.moveEyes.bind(face), THROTTLE_DELAY),
       };
 
-      this.throttledEyes.push(throttleEye);
+      this.faces.push(faceItem);
     });
   }
 
@@ -66,9 +70,7 @@ export default class EyesController {
       `.face[${IMG_ID_ATTR}=${imageId}]`
     );
     if (existingFaces) {
-      this.throttledEyes = this.throttledEyes.filter(
-        (eye) => eye.imgId !== imageId
-      );
+      this.faces = this.faces.filter((eye) => eye.imgId !== imageId);
       image.removeAttribute(IMG_ID_ATTR);
       Array.from(existingFaces).forEach((face) => {
         face.remove();
@@ -83,12 +85,12 @@ export default class EyesController {
     Array.from(existingGooglyImages).forEach((image) => {
       this.undraw(image);
     });
-    this.throttledEyes = [];
+    this.faces = [];
   }
 }
 
 class Face {
-  constructor(image, faceData) {
+  constructor(image, faceData, hasEyeLids) {
     const imgDimensions = image.getBoundingClientRect();
     const computed = getComputedStyle(image);
     const width = computed.width;
@@ -96,13 +98,13 @@ class Face {
 
     const docTop = document.documentElement.scrollTop;
     this.eyes = [];
-    this.face = generateElement({
+    this.container = generateElement({
       tag: 'div',
       className: 'face',
       attributes: [{ attr: IMG_ID_ATTR, value: imageId }],
     });
-    this.face.style.top = `${imgDimensions.top + docTop}px`;
-    this.face.style.left = `${imgDimensions.left}px`;
+    this.container.style.top = `${imgDimensions.top + docTop}px`;
+    this.container.style.left = `${imgDimensions.left}px`;
 
     const { face, eye1, eye2 } = faceData;
 
@@ -111,12 +113,12 @@ class Face {
     const eyeSize = face[2] * EYE_SIZE_FACTOR * scale;
     if (eyeSize > EYE_MIN) {
       const type = EYE_TYPES[0]; // EYE_TYPES[randomizer(EYE_TYPES.length - 1)];
-      const leftEye = new Eye(eyeSize, eye1, scale, type, false);
-      const rightEye = new Eye(eyeSize, eye2, scale, type, false);
+      const leftEye = new Eye(eyeSize, eye1, scale, type, hasEyeLids);
+      const rightEye = new Eye(eyeSize, eye2, scale, type, hasEyeLids);
 
       this.eyes = [leftEye, rightEye];
-      this.face.append(leftEye.eye);
-      this.face.append(rightEye.eye);
+      this.container.append(leftEye.eye);
+      this.container.append(rightEye.eye);
     }
   }
 
@@ -196,12 +198,12 @@ class Eye {
     });
 
     const lidClass = hasEyeLids ? '' : 'none';
-    const lid = generateElement({
+    this.lid = generateElement({
       tag: 'div',
       className: `eye-lid ${lidClass}`,
     });
-    lid.style.height = `${EYELID_MAX_PERC - 1}%`;
-    lid.style.borderRadius = `${eyeSize}px ${eyeSize}px 0 0`;
+    this.lid.style.height = `${EYELID_MAX_PERC - 1}%`;
+    this.lid.style.borderRadius = `${eyeSize}px ${eyeSize}px 0 0`;
 
     this.lidOpen = generateElement({
       tag: 'div',
@@ -212,7 +214,14 @@ class Eye {
 
     this.eye.appendChild(this.inner);
 
-    this.eye.appendChild(lid);
+    this.eye.appendChild(this.lid);
     this.eye.appendChild(this.lidOpen);
+  }
+
+  // toggling "none" is the `true` case, so set opposite of `true` (i.e. `false`)
+  // to represent showing the eyelids
+  toggleEyeLids(isOn) {
+    this.lid.classList.toggle('none', !isOn);
+    this.lidOpen.classList.toggle('none', !isOn);
   }
 }

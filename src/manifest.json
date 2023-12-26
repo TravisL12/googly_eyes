@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "Googly Eyes",
+  "name": "Eye see you",
   "description": "The eyes... they're watching me",
   "options_page": "options.html",
   "background": { "service_worker": "background.bundle.js" },
@@ -12,6 +12,7 @@
     "https://raw.githubusercontent.com/*",
     "https://drone.nenadmarkus.com/*"
   ],
+  "permissions": ["storage"],
   "icons": {
     "128": "icon-128.png"
   },

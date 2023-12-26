@@ -1,10 +1,13 @@
 import React from 'react';
 
+const manifestData = chrome.runtime.getManifest();
+const version = `v${manifestData.version}`;
+
 const About = () => {
   return (
     <div className="about">
       <p>
-        By The Trav <span id="version"></span>
+        By The Trav <span id="version">{version}</span>
       </p>
       <ul>
         <li>
