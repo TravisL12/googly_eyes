@@ -23,6 +23,11 @@ export const EYE_TYPES = [
 ];
 
 // storage options
+export const IS_GOOGLY_ON = 'isGooglyOn';
 export const HAS_EYELIDS = 'hasEyelids';
 export const PICTURE_LIMIT_SETTING = 'facesWithEyesLimit';
-export const SETTING_VALUES = [HAS_EYELIDS, PICTURE_LIMIT_SETTING];
+export const SETTING_VALUES = [
+  HAS_EYELIDS,
+  PICTURE_LIMIT_SETTING,
+  IS_GOOGLY_ON,
+];

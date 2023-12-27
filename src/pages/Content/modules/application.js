@@ -18,6 +18,7 @@ import {
   EYE_TYPES,
   HAS_EYELIDS,
   PICTURE_LIMIT_SETTING,
+  IS_GOOGLY_ON,
 } from './constants';
 
 const googlyContainer = generateElement({
@@ -30,13 +31,29 @@ export default class EyesController {
   constructor(intersectObserver) {
     this.faces = [];
     this.intersectObserver = intersectObserver;
+    this[IS_GOOGLY_ON] = true;
     this[HAS_EYELIDS] = false;
     this[PICTURE_LIMIT] = PICTURE_LIMIT;
   }
 
+  toggleEnabled() {
+    if (!this[IS_GOOGLY_ON]) {
+      this.removePreviousFaceElements();
+      this.intersectObserver.disconnect();
+      return;
+    } else {
+      this.initialLoad();
+    }
+  }
+
   initialLoad(options) {
-    const isOn = options?.[HAS_EYELIDS];
-    this[HAS_EYELIDS] = isOn || this[HAS_EYELIDS];
+    this[IS_GOOGLY_ON] = options?.[IS_GOOGLY_ON] || this[IS_GOOGLY_ON];
+    if (!this[IS_GOOGLY_ON]) {
+      this.removePreviousFaceElements();
+      return;
+    }
+    const isEyelidsOn = options?.[HAS_EYELIDS];
+    this[HAS_EYELIDS] = isEyelidsOn || this[HAS_EYELIDS];
 
     const pictureLimit = options?.[PICTURE_LIMIT_SETTING];
     this[PICTURE_LIMIT] = pictureLimit || this[PICTURE_LIMIT];
@@ -48,6 +65,11 @@ export default class EyesController {
   }
 
   async drawEyes(image) {
+    if (!this[IS_GOOGLY_ON]) {
+      this.removePreviousFaceElements();
+      return;
+    }
+
     const faceCoordinates = await getFace(image);
     const isOverMax =
       this.faces.length + faceCoordinates.length > this[PICTURE_LIMIT];

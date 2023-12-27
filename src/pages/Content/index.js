@@ -1,6 +1,7 @@
 import EyesController from './modules/application';
 import {
   HAS_EYELIDS,
+  IS_GOOGLY_ON,
   PICTURE_LIMIT,
   PICTURE_LIMIT_SETTING,
 } from './modules/constants';
@@ -62,6 +63,11 @@ const startEyes = () => {
       });
 
       chrome.storage.onChanged.addListener((changes) => {
+        if (changes[IS_GOOGLY_ON]) {
+          eyesControl[IS_GOOGLY_ON] = changes[IS_GOOGLY_ON].newValue;
+          eyesControl.toggleEnabled();
+        }
+
         if (changes[PICTURE_LIMIT_SETTING]) {
           eyesControl[PICTURE_LIMIT] = changes[PICTURE_LIMIT_SETTING].newValue;
         }
