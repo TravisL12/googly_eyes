@@ -12,24 +12,20 @@ import {
 } from '../Content/modules/constants';
 
 const reducer = (state, action) => {
-  if (action.type === HAS_EYELIDS) {
-    return { ...state, [action.type]: action.value };
-  }
-  if (action.type === IS_GOOGLY_ON) {
-    return { ...state, [action.type]: action.value };
-  }
-  if (action.type === PICTURE_LIMIT_SETTING) {
+  if (!!action.type) {
     return { ...state, [action.type]: action.value };
   }
   return state;
 };
 
+const initState = {
+  [HAS_EYELIDS]: false,
+  [PICTURE_LIMIT_SETTING]: 10,
+  [IS_GOOGLY_ON]: true,
+};
+
 const Popup = () => {
-  const [state, dispatch] = useReducer(reducer, {
-    [HAS_EYELIDS]: false,
-    [PICTURE_LIMIT_SETTING]: 10,
-    [IS_GOOGLY_ON]: true,
-  });
+  const [state, dispatch] = useReducer(reducer, initState);
 
   useEffect(() => {
     getStorage((options) => {
