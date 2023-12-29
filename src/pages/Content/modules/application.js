@@ -117,7 +117,7 @@ export default class EyesController {
   }
 }
 
-class Face {
+export class Face {
   constructor(image, faceData, hasEyeLids) {
     const imgDimensions = image.getBoundingClientRect();
     const computed = getComputedStyle(image);

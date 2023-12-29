@@ -1,4 +1,5 @@
 .GooglyOptions {
+  position: relative;
   display: flex;
   flex-direction: column;
   background: var(--stoned);
@@ -6,6 +7,11 @@
   padding: 10px;
   height: 400px;
   width: 400px;
+
+  .eye-container {
+    display: flex;
+    justify-content: space-between;
+  }
 
   .options {
     flex: 1;

@@ -10,6 +10,7 @@ import {
   PICTURE_LIMIT,
   PICTURE_LIMIT_SETTING,
 } from '../Content/modules/constants';
+import GoogleEyes from './GoogleEyes';
 
 const reducer = (state, action) => {
   if (!!action.type) {
@@ -47,6 +48,12 @@ const Popup = () => {
     <div className="GooglyOptions">
       <div className="options">
         <h1>Eye See You!</h1>
+        <div className="eye-container">
+          <GoogleEyes />
+          <GoogleEyes />
+          <GoogleEyes />
+          <GoogleEyes />
+        </div>
         <div>
           <label htmlFor="is-googly-on">Enable Googly Eyes</label>
           <input
