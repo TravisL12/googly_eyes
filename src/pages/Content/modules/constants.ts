@@ -5,13 +5,13 @@ export const IMG_ID_ATTR = 'googly-img-id';
 export const EYELID_MAX_PERC = 50;
 export const PICTURE_LIMIT = 15;
 
-const NORMAL_EYE = 'normal';
-const BLUE_EYE = 'blue';
-const GLAM_EYE = 'glam';
-const STONED_EYE = 'stoned';
-const SLEEPY_EYE = 'sleepy';
-const DROOPY_EYE = 'droopy';
-const CAT_EYE = 'cat';
+export const NORMAL_EYE = 'normal';
+export const BLUE_EYE = 'blue';
+export const GLAM_EYE = 'glam';
+export const STONED_EYE = 'stoned';
+export const SLEEPY_EYE = 'sleepy';
+export const DROOPY_EYE = 'droopy';
+export const CAT_EYE = 'cat';
 export const EYE_TYPES = [
   NORMAL_EYE,
   BLUE_EYE,

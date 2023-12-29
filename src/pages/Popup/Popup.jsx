@@ -5,6 +5,9 @@ import './Popup.css';
 import '../Content/content.styles.css';
 import { getStorage, setStorage } from '../Content/modules/storageHelper';
 import {
+  BLUE_EYE,
+  GLAM_EYE,
+  STONED_EYE,
   HAS_EYELIDS,
   IS_GOOGLY_ON,
   PICTURE_LIMIT,
@@ -50,9 +53,9 @@ const Popup = () => {
         <h1>Eye See You!</h1>
         <div className="eye-container">
           <GoogleEyes />
-          <GoogleEyes />
-          <GoogleEyes />
-          <GoogleEyes />
+          <GoogleEyes eyeType={BLUE_EYE} />
+          <GoogleEyes eyeType={GLAM_EYE} />
+          <GoogleEyes eyeType={STONED_EYE} />
         </div>
         <div>
           <label htmlFor="is-googly-on">Enable Googly Eyes</label>
