@@ -5,7 +5,6 @@ import {
   getFace,
   stripPixels,
   randomImgId,
-  randomizer,
 } from './helper';
 
 import {
