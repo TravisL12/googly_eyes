@@ -34,17 +34,15 @@ export const randomImgId = () => {
 export const throttle = (func, limit) => {
   let lastFunc;
   let lastRan;
-  return function () {
-    const context = this;
-    const args = arguments;
+  return (...args) => {
     if (!lastRan) {
-      func.apply(context, args);
+      func.apply(this, args);
       lastRan = Date.now();
     } else {
       clearTimeout(lastFunc);
       lastFunc = setTimeout(function () {
         if (Date.now() - lastRan >= limit) {
-          func.apply(context, args);
+          func.apply(this, args);
           lastRan = Date.now();
         }
       }, limit - (Date.now() - lastRan));

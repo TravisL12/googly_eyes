@@ -1,6 +1,12 @@
 import EyesController from './modules/application';
-import { IMG_ID_ATTR } from './modules/constants';
+import {
+  HAS_EYELIDS,
+  IS_GOOGLY_ON,
+  PICTURE_LIMIT,
+  PICTURE_LIMIT_SETTING,
+} from './modules/constants';
 import { loadDeps, shuffle } from './modules/helper';
+import { getStorage } from './modules/storageHelper';
 
 const EYE_MOVE_EVENTS = ['mousemove', 'wheel'];
 let resizeTimeout;
@@ -17,12 +23,12 @@ const startEyes = () => {
         (entries) => {
           const inter = entries.filter((e) => e.isIntersecting);
           shuffle(inter).forEach((entry) => {
-            eyes.drawEyes(entry.target);
+            eyesControl.drawEyes(entry.target);
           });
 
           const notInter = entries.filter((e) => !e.isIntersecting);
           notInter.forEach((entry) => {
-            eyes.undraw(entry.target);
+            eyesControl.undraw(entry.target);
           });
         },
         { threshold: 0.2 }
@@ -51,20 +57,43 @@ const startEyes = () => {
         childList: true,
       });
 
-      const eyes = new EyesController(intersectObserver);
-      eyes.initialLoad();
+      const eyesControl = new EyesController(intersectObserver);
+      getStorage((options) => {
+        eyesControl.initialLoad(options);
+      });
+
+      chrome.storage.onChanged.addListener((changes) => {
+        if (changes[IS_GOOGLY_ON]) {
+          eyesControl[IS_GOOGLY_ON] = changes[IS_GOOGLY_ON].newValue;
+          eyesControl.toggleEnabled();
+        }
+
+        if (changes[PICTURE_LIMIT_SETTING]) {
+          eyesControl[PICTURE_LIMIT] = changes[PICTURE_LIMIT_SETTING].newValue;
+        }
+
+        if (changes[HAS_EYELIDS]) {
+          const isOn = changes[HAS_EYELIDS].newValue;
+          eyesControl[HAS_EYELIDS] = isOn;
+          eyesControl.faces.forEach(({ face }) => {
+            const [leftEye, rightEye] = face.eyes;
+            leftEye.toggleEyeLids(isOn);
+            rightEye.toggleEyeLids(isOn);
+          });
+        }
+      });
 
       window.addEventListener('resize', () => {
-        eyes.removePreviousFaceElements();
+        eyesControl.removePreviousFaceElements();
         clearTimeout(resizeTimeout);
         resizeTimeout = setTimeout(() => {
-          eyes.initialLoad();
+          eyesControl.initialLoad();
         }, 150);
       });
 
       EYE_MOVE_EVENTS.forEach((item) => {
         window.addEventListener(item, (event) => {
-          eyes.throttledEyes.forEach(({ throttleCb }) => {
+          eyesControl.faces.forEach(({ throttleCb }) => {
             throttleCb(event);
           });
         });

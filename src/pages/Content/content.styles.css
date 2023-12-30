@@ -1,76 +1,145 @@
-:root {
-  --black: black;
+.googly-eyes,
+.GooglyOptions {
+  --black: #333333;
+  --white: white;
+  --transparent-black: rgba(0, 0, 0, 0.5);
+  --transparent-light-black: rgba(0, 0, 0, 0.05);
   --page-width: 650px;
   --eye-size: 20px;
 
   --mid-eye: #6e7b7d;
-  --blue: #1bafdd;
-  --glam: pink;
-  --stoned: lightblue;
-  --sleepy: green;
-  --droopy: magenta;
-  --cat: purple;
+  --blue-retina: #1bafdd;
+  --glam-retina: pink;
+  --stoned-retina: lightblue;
+  --sleepy-retina: green;
+  --droopy-retina: magenta;
+  --cat-retina: purple;
 }
-
 .googly-eyes .face {
   position: absolute;
-}
-
-.googly-eyes .face .eye {
-  position: absolute;
-  background: white;
-  width: var(--eye-size);
-  height: var(--eye-size);
-  border-radius: 50%;
-  box-shadow: 0 0 0 1px rgba(0, 0, 0, 1);
-}
-
-.googly-eyes .face .eye-lid {
-  position: absolute;
-  top: 0;
-  height: 100%;
-  width: 100%;
-  background: radial-gradient(
-    circle,
-    rgb(254, 190, 190) 0%,
-    rgb(245, 211, 176) 100%
-  );
-}
-
-.googly-eyes .face .eye-lid-open {
-  position: absolute;
-  top: 0;
-  height: 100%;
-  width: 100%;
-  background: white;
-}
-
-.googly-eyes .face .inner {
-  top: 0;
-  left: 0;
-  position: absolute;
-  width: 60%;
-  height: 60%;
   z-index: 1;
-  background: var(--black);
-  border-radius: 50%;
-}
 
-.googly-eyes .face .inner.blue {
-  background: var(--blue);
-}
-.googly-eyes .face .inner.glam {
-  background: var(--glam);
-}
-.googly-eyes .face .inner.stoned {
-  background: var(--stoned);
-}
-.googly-eyes .face .inner.sleepy {
-  background: var(--sleepy);
-}
-.googly-eyes .face .inner.droopy {
-  background: var(--droopy);
-}
-.googly-eyes .face .inner.cat {
-  background: var(--cat);
+  .eye {
+    position: absolute;
+    background: white;
+    width: var(--eye-size);
+    height: var(--eye-size);
+    border-radius: 50%;
+    box-shadow: 0 0 0 1px var(--transparent-light-black);
+    z-index: 2;
+
+    .none {
+      display: none;
+    }
+
+    .eye-lid {
+      position: absolute;
+      top: 0;
+      height: 100%;
+      width: 100%;
+    }
+
+    .eye-lid-open {
+      position: absolute;
+      top: 0;
+      height: 100%;
+      width: 100%;
+      background: var(--white);
+    }
+
+    .inner {
+      top: 0;
+      left: 0;
+      position: absolute;
+      width: 60%;
+      height: 60%;
+      z-index: 3;
+      border-radius: 50%;
+    }
+
+    &.normal {
+      .inner {
+        background: var(--black);
+      }
+      .eye-lid {
+        background: radial-gradient(
+          circle,
+          rgb(254, 190, 190) 0%,
+          rgb(245, 211, 176) 100%
+        );
+      }
+    }
+    &.blue {
+      .inner {
+        background: var(--blue-retina);
+      }
+      .eye-lid {
+        background: radial-gradient(
+          circle,
+          var(--blue-retina) 0%,
+          var(--black) 100%
+        );
+      }
+    }
+    &.glam {
+      .inner {
+        background: var(--glam-retina);
+      }
+      .eye-lid {
+        background: radial-gradient(
+          circle,
+          var(--glam-retina) 0%,
+          var(--black) 100%
+        );
+      }
+    }
+    &.stoned {
+      .inner {
+        background: var(--stoned-retina);
+      }
+      .eye-lid {
+        background: radial-gradient(
+          circle,
+          var(--stoned-retina) 0%,
+          var(--black) 100%
+        );
+      }
+    }
+    &.sleepy {
+      .inner {
+        background: var(--sleepy-retina);
+      }
+      .eye-lid {
+        background: radial-gradient(
+          circle,
+          var(--sleepy-retina) 0%,
+          var(--black) 100%
+        );
+      }
+    }
+    &.droopy {
+      .inner {
+        background: var(--droopy-retina);
+      }
+      .eye-lid {
+        background: radial-gradient(
+          circle,
+          var(--droopy-retina) 0%,
+          var(--black) 100%
+        );
+      }
+    }
+    &.cat {
+      .inner {
+        background: var(--cat-retina);
+      }
+      .eye-lid {
+        background: radial-gradient(
+          circle,
+          var(--cat-retina) 0%,
+          var(--black) 100%
+        );
+      }
+    }
+  }
 }
