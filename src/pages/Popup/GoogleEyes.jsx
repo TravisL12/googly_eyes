@@ -32,7 +32,7 @@ const GoogleEyes = ({ eyeType = NORMAL_EYE }) => {
 
       leftEyeRef.current.style.top = `${topMove % 12}px`;
       rightEyeRef.current.style.top = `${topMove % 12}px`;
-    }, 1000);
+    }, 500);
 
     return () => {
       clearInterval(interval);
