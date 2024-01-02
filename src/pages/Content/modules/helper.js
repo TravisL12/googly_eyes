@@ -1,4 +1,5 @@
 import pico from 'picojs';
+import { EYELID_MAX_PERC } from './constants';
 import lploc from './lploc';
 
 export function randomizer(max = 1, min = 0) {
@@ -73,6 +74,57 @@ export const getFullAngle = (x, y) => {
   }
 
   return angle2Rads(360 + angleDeg);
+};
+
+export const moveEye = ({ moveEvent, eye, inner, lidOpen }) => {
+  const eyeBound = eye.getBoundingClientRect();
+  const innerBound = inner.getBoundingClientRect();
+
+  const radius = eyeBound.width / 2;
+  const innerRadius = innerBound.width / 2;
+
+  const x = moveEvent.clientX - innerRadius;
+  const y = moveEvent.clientY - innerRadius;
+
+  const mouseX = x - eyeBound.left - innerRadius;
+  const mouseY = y - eyeBound.top - innerRadius;
+  const mouseRadius = Math.sqrt(mouseX ** 2 + mouseY ** 2);
+
+  const deltaRadius = radius - innerRadius;
+
+  const isInsideEye = deltaRadius > mouseRadius;
+  if (isInsideEye) {
+    inner.style['left'] = `${mouseX + innerRadius}px`;
+    inner.style['top'] = `${mouseY + innerRadius}px`;
+  } else {
+    const opposite = eyeBound.top + deltaRadius - y;
+    const adjacent = x - (eyeBound.left + deltaRadius);
+
+    const angle = getFullAngle(adjacent, opposite);
+
+    const yMax = deltaRadius * Math.sin(angle);
+    const xMax = deltaRadius * Math.cos(angle);
+
+    const eyeLeft = deltaRadius + xMax;
+
+    const isAtBottom = yMax === -1 * deltaRadius;
+    const isAtTop = yMax === deltaRadius;
+    const eyeTop = isAtBottom
+      ? 0
+      : isAtTop
+      ? 2 * deltaRadius
+      : deltaRadius - yMax;
+
+    if (lidOpen) {
+      const lidHeight = 100 * (eyeTop / eyeBound.height);
+      const openPerc = Math.min(100, lidHeight);
+      lidOpen.style.height = `${EYELID_MAX_PERC - openPerc}%`;
+      lidOpen.style.top = `${openPerc}%`;
+    }
+
+    inner.style['top'] = `${eyeTop}px`;
+    inner.style['left'] = `${eyeLeft}px`;
+  }
 };
 
 export const generateElement = (

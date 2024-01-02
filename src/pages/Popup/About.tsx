@@ -16,17 +16,12 @@ const About = () => {
           </a>
         </li>
         <li>
-          <a target="_blank" href="https://github.com/TravisL12/mouse_odometer">
+          <a target="_blank" href="https://github.com/TravisL12/googly_eyes/">
             Github
           </a>
         </li>
         <li>
-          <a target="_blank" href="https://www.twitter.com/travisl12">
-            Twitter
-          </a>
-        </li>
-        <li>
-          <a target="_blank" href="https://codepen.io/TravisL12/pen/RwoYQYY">
+          <a target="_blank" href="https://codepen.io/TravisL12/pen/WNMLGma">
             CodePen
           </a>
         </li>

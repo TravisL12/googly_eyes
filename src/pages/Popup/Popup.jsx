@@ -1,4 +1,4 @@
-import React, { useEffect, useReducer } from 'react';
+import React, { useEffect, useReducer, useState } from 'react';
 
 import About from './About';
 import './Popup.css';
@@ -29,6 +29,7 @@ const initState = {
 };
 
 const Popup = () => {
+  const [move, setMove] = useState();
   const [state, dispatch] = useReducer(reducer, initState);
 
   useEffect(() => {
@@ -48,14 +49,19 @@ const Popup = () => {
   };
 
   return (
-    <div className="GooglyOptions">
+    <div
+      className="GooglyOptions"
+      onMouseMove={(event) => {
+        setMove(event);
+      }}
+    >
       <div className="options">
         <h1>Eye See You!</h1>
         <div className="eye-container">
-          <GoogleEyes />
-          <GoogleEyes eyeType={BLUE_EYE} />
-          <GoogleEyes eyeType={GLAM_EYE} />
-          <GoogleEyes eyeType={STONED_EYE} />
+          <GoogleEyes move={move} />
+          <GoogleEyes move={move} eyeType={BLUE_EYE} />
+          <GoogleEyes move={move} eyeType={GLAM_EYE} />
+          <GoogleEyes move={move} eyeType={STONED_EYE} />
         </div>
         <div>
           <label htmlFor="is-googly-on">Enable Googly Eyes</label>
