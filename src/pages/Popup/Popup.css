@@ -8,14 +8,18 @@
   height: 400px;
   width: 400px;
 
-  .eye-container {
-    display: flex;
-    justify-content: space-between;
-    padding: 5px 0;
-    .googly-eyes {
-      padding: 6px 8px;
-      border-radius: 5px;
-      background: var(--transparent-light-black);
+  .eye-preview-section {
+    margin: 10px 0 20px;
+
+    .eye-container {
+      display: flex;
+      justify-content: space-between;
+      padding: 5px 0;
+      .googly-eyes {
+        padding: 6px 8px;
+        border-radius: 5px;
+        background: var(--transparent-light-black);
+      }
     }
   }
 

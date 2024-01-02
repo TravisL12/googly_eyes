@@ -8,6 +8,9 @@ import {
   BLUE_EYE,
   GLAM_EYE,
   STONED_EYE,
+  SLEEPY_EYE,
+  DROOPY_EYE,
+  CAT_EYE,
   HAS_EYELIDS,
   IS_GOOGLY_ON,
   PICTURE_LIMIT,
@@ -57,11 +60,19 @@ const Popup = () => {
     >
       <div className="options">
         <h1>Eye See You!</h1>
-        <div className="eye-container">
-          <GoogleEyes move={move} />
-          <GoogleEyes move={move} hasEyeLids={true} eyeType={GLAM_EYE} />
-          <GoogleEyes move={move} eyeType={BLUE_EYE} />
-          <GoogleEyes move={move} hasEyeLids={true} eyeType={STONED_EYE} />
+        <div className="eye-preview-section">
+          <div className="eye-container">
+            <GoogleEyes move={move} />
+            <GoogleEyes move={move} hasEyeLids={true} eyeType={GLAM_EYE} />
+            <GoogleEyes move={move} hasEyeLids={true} eyeType={BLUE_EYE} />
+            <GoogleEyes move={move} hasEyeLids={true} eyeType={STONED_EYE} />
+          </div>
+          <div className="eye-container">
+            <GoogleEyes move={move} hasEyeLids={true} eyeType={SLEEPY_EYE} />
+            <GoogleEyes move={move} hasEyeLids={true} eyeType={DROOPY_EYE} />
+            <GoogleEyes move={move} hasEyeLids={true} eyeType={CAT_EYE} />
+            <GoogleEyes move={move} />
+          </div>
         </div>
         <div>
           <label htmlFor="is-googly-on">Enable Googly Eyes</label>
