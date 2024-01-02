@@ -59,9 +59,9 @@ const Popup = () => {
         <h1>Eye See You!</h1>
         <div className="eye-container">
           <GoogleEyes move={move} />
+          <GoogleEyes move={move} hasEyeLids={true} eyeType={GLAM_EYE} />
           <GoogleEyes move={move} eyeType={BLUE_EYE} />
-          <GoogleEyes move={move} eyeType={GLAM_EYE} />
-          <GoogleEyes move={move} eyeType={STONED_EYE} />
+          <GoogleEyes move={move} hasEyeLids={true} eyeType={STONED_EYE} />
         </div>
         <div>
           <label htmlFor="is-googly-on">Enable Googly Eyes</label>

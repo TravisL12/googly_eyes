@@ -5,7 +5,7 @@ import Eye from './Eye';
 const EYE_SIZE = 30;
 const EYE_SPACING = EYE_SIZE * 1.2;
 
-const GoogleEyes = ({ move, eyeType = NORMAL_EYE }) => {
+const GoogleEyes = ({ move, hasEyeLids, eyeType = NORMAL_EYE }) => {
   return (
     <div
       className="googly-eyes"
@@ -16,8 +16,20 @@ const GoogleEyes = ({ move, eyeType = NORMAL_EYE }) => {
       }}
     >
       <div className="face" style={{ height: '100%', width: '100%' }}>
-        <Eye move={move} size={EYE_SIZE} left={0} type={eyeType} />
-        <Eye move={move} size={EYE_SIZE} left={EYE_SPACING} type={eyeType} />
+        <Eye
+          move={move}
+          hasEyeLids={hasEyeLids}
+          size={EYE_SIZE}
+          left={0}
+          type={eyeType}
+        />
+        <Eye
+          move={move}
+          hasEyeLids={hasEyeLids}
+          size={EYE_SIZE}
+          left={EYE_SPACING}
+          type={eyeType}
+        />
       </div>
     </div>
   );

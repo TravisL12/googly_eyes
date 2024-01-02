@@ -1,4 +1,5 @@
 import React, { useEffect, useRef } from 'react';
+import { EYELID_MAX_PERC } from '../Content/modules/constants';
 import { moveEye } from '../Content/modules/helper';
 
 const innerStart = {
@@ -6,18 +7,18 @@ const innerStart = {
   left: 8,
 };
 
-const Eye = ({ move, size, left, type }) => {
+const Eye = ({ move, size, left, type, hasEyeLids }) => {
   const eyeRef = useRef();
-  const innerEyeRef = useRef();
 
   const updateEye = (moveEvent) => {
-    if (!eyeRef?.current || !innerEyeRef?.current) {
+    if (!eyeRef?.current) {
       return;
     }
 
     const eye = eyeRef.current;
-    const inner = innerEyeRef.current;
-    moveEye({ moveEvent, eye, inner });
+    const inner = eye.querySelector('.inner');
+    const lidOpen = eye.querySelector('.eye-lid-open');
+    moveEye({ moveEvent, eye, inner, lidOpen });
   };
 
   useEffect(() => {
@@ -25,6 +26,11 @@ const Eye = ({ move, size, left, type }) => {
       updateEye(move);
     }
   }, [move]);
+
+  const eyeLidStyle = {
+    height: `${EYELID_MAX_PERC - 1}%`,
+    borderRadius: `${size}px ${size}px 0 0`,
+  };
 
   return (
     <div
@@ -36,7 +42,13 @@ const Eye = ({ move, size, left, type }) => {
         left,
       }}
     >
-      <div ref={innerEyeRef} className="inner" style={innerStart}></div>
+      <div className="inner" style={innerStart}></div>
+      {hasEyeLids && (
+        <>
+          <div className="eye-lid" style={eyeLidStyle}></div>
+          <div className="eye-lid-open" style={eyeLidStyle}></div>
+        </>
+      )}
     </div>
   );
 };

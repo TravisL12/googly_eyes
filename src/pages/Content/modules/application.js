@@ -155,7 +155,6 @@ export class Face {
       if (!eyeObj) continue;
 
       const { eye, inner, lidOpen } = eyeObj;
-
       moveEye({ moveEvent: event, eye, inner, lidOpen });
     }
   }
@@ -178,20 +177,22 @@ class Eye {
       className: `inner`,
     });
 
+    const lidHeight = `${EYELID_MAX_PERC - 1}%`;
+    const lidBorderRadius = `${eyeSize}px ${eyeSize}px 0 0`;
     const lidClass = hasEyeLids ? '' : 'none';
     this.lid = generateElement({
       tag: 'div',
       className: `eye-lid ${lidClass}`,
     });
-    this.lid.style.height = `${EYELID_MAX_PERC - 1}%`;
-    this.lid.style.borderRadius = `${eyeSize}px ${eyeSize}px 0 0`;
+    this.lid.style.height = lidHeight;
+    this.lid.style.borderRadius = lidBorderRadius;
 
     this.lidOpen = generateElement({
       tag: 'div',
       className: `eye-lid-open ${lidClass}`,
     });
-    this.lidOpen.style.height = `${EYELID_MAX_PERC}%`;
-    this.lidOpen.style.borderRadius = `${eyeSize}px ${eyeSize}px 0 0`;
+    this.lidOpen.style.height = lidHeight;
+    this.lidOpen.style.borderRadius = lidBorderRadius;
 
     this.eye.appendChild(this.inner);
 

@@ -74,6 +74,7 @@ const startEyes = () => {
 
         if (changes[HAS_EYELIDS]) {
           const isOn = changes[HAS_EYELIDS].newValue;
+          console.log(changes[HAS_EYELIDS], 'changes[HAS_EYELIDS]');
           eyesControl[HAS_EYELIDS] = isOn;
           eyesControl.faces.forEach(({ face }) => {
             const [leftEye, rightEye] = face.eyes;
