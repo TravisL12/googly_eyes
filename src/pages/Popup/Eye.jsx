@@ -2,11 +2,6 @@ import React, { useEffect, useRef } from 'react';
 import { EYELID_MAX_PERC } from '../Content/modules/constants';
 import { moveEye } from '../Content/modules/helper';
 
-const innerStart = {
-  top: 8,
-  left: 8,
-};
-
 const Eye = ({ move, size, left, type, hasEyeLids }) => {
   const eyeRef = useRef();
 
@@ -42,7 +37,13 @@ const Eye = ({ move, size, left, type, hasEyeLids }) => {
         left,
       }}
     >
-      <div className="inner" style={innerStart}></div>
+      <div
+        className="inner"
+        style={{
+          top: size / 4,
+          left: size / 4,
+        }}
+      ></div>
       {hasEyeLids && (
         <>
           <div className="eye-lid" style={eyeLidStyle}></div>
