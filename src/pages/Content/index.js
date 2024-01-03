@@ -1,11 +1,12 @@
 import EyesController from './modules/application';
 import {
+  EYE_TYPE_IDX,
   HAS_EYELIDS,
   IS_GOOGLY_ON,
   PICTURE_LIMIT,
   PICTURE_LIMIT_SETTING,
 } from './modules/constants';
-import { loadDeps, shuffle } from './modules/helper';
+import { getEyeTypeFromIdx, loadDeps, shuffle } from './modules/helper';
 import { getStorage } from './modules/storageHelper';
 
 const EYE_MOVE_EVENTS = ['mousemove', 'wheel'];
@@ -74,12 +75,20 @@ const startEyes = () => {
 
         if (changes[HAS_EYELIDS]) {
           const isOn = changes[HAS_EYELIDS].newValue;
-          console.log(changes[HAS_EYELIDS], 'changes[HAS_EYELIDS]');
           eyesControl[HAS_EYELIDS] = isOn;
           eyesControl.faces.forEach(({ face }) => {
             const [leftEye, rightEye] = face.eyes;
             leftEye.toggleEyeLids(isOn);
             rightEye.toggleEyeLids(isOn);
+          });
+        }
+
+        if (changes[EYE_TYPE_IDX]) {
+          const eyeType = getEyeTypeFromIdx(changes[EYE_TYPE_IDX].newValue);
+          eyesControl.faces.forEach(({ face }) => {
+            const [leftEye, rightEye] = face.eyes;
+            leftEye.changeEyeType(eyeType);
+            rightEye.changeEyeType(eyeType);
           });
         }
       });

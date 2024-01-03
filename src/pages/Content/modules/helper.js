@@ -1,5 +1,5 @@
 import pico from 'picojs';
-import { EYELID_MAX_PERC } from './constants';
+import { EYELID_MAX_PERC, EYE_TYPES, RANDOM_EYE } from './constants';
 import lploc from './lploc';
 
 export function randomizer(max = 1, min = 0) {
@@ -287,4 +287,15 @@ const findFaceData = (imgData, width, height) => {
   } catch (err) {
     console.log(err, 'cant load image');
   }
+};
+
+export const getEyeTypeFromIdx = (idx) => {
+  const eyeTypeIdx = idx !== undefined ? idx : undefined;
+  return EYE_TYPES[eyeTypeIdx] ?? RANDOM_EYE;
+};
+
+export const getEyeType = (eyeType) => {
+  return eyeType === RANDOM_EYE
+    ? EYE_TYPES[randomizer(EYE_TYPES.length - 1)]
+    : eyeType;
 };

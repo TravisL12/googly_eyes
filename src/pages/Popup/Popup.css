@@ -17,9 +17,10 @@
       border-radius: 5px;
       padding: 6px 8px;
       background: var(--transparent-light-black);
+      border: 3px solid var(--transparent-light-black);
 
       &.selected-eye-type {
-        border: 3px solid black;
+        border-color: var(--black);
       }
     }
   }

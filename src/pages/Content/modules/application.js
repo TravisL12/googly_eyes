@@ -6,6 +6,8 @@ import {
   randomImgId,
   moveEye,
   randomizer,
+  getEyeType,
+  getEyeTypeFromIdx,
 } from './helper';
 
 import {
@@ -61,9 +63,7 @@ export default class EyesController {
     const pictureLimit = options?.[PICTURE_LIMIT_SETTING];
     this[PICTURE_LIMIT] = pictureLimit || this[PICTURE_LIMIT];
 
-    const eyeTypeIdx =
-      options?.[EYE_TYPE_IDX] !== undefined ? options[EYE_TYPE_IDX] : undefined;
-    this.eyeType = EYE_TYPES[eyeTypeIdx] ?? RANDOM_EYE;
+    this.eyeType = getEyeTypeFromIdx(options?.[EYE_TYPE_IDX]);
 
     const startImages = document.querySelectorAll('img');
     startImages.forEach((image) => {
@@ -147,10 +147,7 @@ export class Face {
     const scale = stripPixels(width) / image.naturalWidth;
     const eyeSize = face[2] * EYE_SIZE_FACTOR * scale;
     if (eyeSize > EYE_MIN) {
-      const type =
-        eyeType === RANDOM_EYE
-          ? EYE_TYPES[randomizer(EYE_TYPES.length - 1)]
-          : eyeType;
+      const type = getEyeType(eyeType);
       const leftEye = new Eye(eyeSize, eye1, scale, type, hasEyeLids);
       const rightEye = new Eye(eyeSize, eye2, scale, type, hasEyeLids);
 
@@ -209,6 +206,10 @@ class Eye {
 
     this.eye.appendChild(this.lid);
     this.eye.appendChild(this.lidOpen);
+  }
+
+  changeEyeType(newType) {
+    this.eye.classList = `eye ${newType}`;
   }
 
   // toggling "none" is the `true` case, so set opposite of `true` (i.e. `false`)
