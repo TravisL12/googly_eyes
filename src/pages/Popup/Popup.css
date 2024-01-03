@@ -19,7 +19,7 @@
       border-radius: 5px;
       padding: 6px 2px;
       background: var(--transparent-light-black);
-      border: 3px solid var(--transparent-light-black);
+      border: 3px solid transparent;
 
       .face {
         position: relative;
@@ -32,8 +32,23 @@
         }
       }
 
+      & + .eye-type-title {
+        text-align: center;
+        color: var(--transparent-black);
+      }
+
+      &:hover {
+        & + .eye-type-title {
+          color: black;
+        }
+      }
+
       &.selected-eye-type {
         border-color: var(--black);
+
+        & + .eye-type-title {
+          color: black;
+        }
       }
     }
   }

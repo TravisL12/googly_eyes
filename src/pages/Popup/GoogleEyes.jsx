@@ -35,7 +35,7 @@ const GoogleEyes = ({
           />
         </div>
       </div>
-      <h4>{titleCase(eyeType)}</h4>
+      <h4 className="eye-type-title">{titleCase(eyeType)}</h4>
     </div>
   );
 };
