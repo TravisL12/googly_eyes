@@ -5,18 +5,27 @@ import Eye from './Eye';
 const EYE_SIZE = 30;
 const EYE_SPACING = EYE_SIZE * 1.2;
 
-const GoogleEyes = ({ move, hasEyeLids, eyeType = NORMAL_EYE }) => {
+const faceStyleOverride = { height: '100%', width: '100%' };
+
+const GoogleEyes = ({
+  move,
+  hasEyeLids,
+  handleClick,
+  isSelected,
+  eyeType = NORMAL_EYE,
+}) => {
   return (
     <div>
       <div
-        className="googly-eyes"
+        className={isSelected ? 'googly-eyes selected-eye-type' : 'googly-eyes'}
+        onClick={handleClick}
         style={{
           height: EYE_SIZE,
           width: 2 * EYE_SIZE + (EYE_SPACING - EYE_SIZE),
           position: 'relative',
         }}
       >
-        <div className="face" style={{ height: '100%', width: '100%' }}>
+        <div className="face" style={faceStyleOverride}>
           <Eye
             move={move}
             hasEyeLids={hasEyeLids}

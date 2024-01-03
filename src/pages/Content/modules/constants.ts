@@ -12,6 +12,7 @@ export const STONED_EYE = 'stoned';
 export const SLEEPY_EYE = 'sleepy';
 export const DROOPY_EYE = 'droopy';
 export const CAT_EYE = 'cat';
+export const RANDOM_EYE = 'random';
 export const EYE_TYPES = [
   NORMAL_EYE,
   BLUE_EYE,
@@ -26,8 +27,10 @@ export const EYE_TYPES = [
 export const IS_GOOGLY_ON = 'isGooglyOn';
 export const HAS_EYELIDS = 'hasEyelids';
 export const PICTURE_LIMIT_SETTING = 'facesWithEyesLimit';
+export const EYE_TYPE_IDX = 'eyeTypeIdx';
 export const SETTING_VALUES = [
   HAS_EYELIDS,
   PICTURE_LIMIT_SETTING,
   IS_GOOGLY_ON,
+  EYE_TYPE_IDX,
 ];

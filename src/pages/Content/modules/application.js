@@ -5,6 +5,7 @@ import {
   stripPixels,
   randomImgId,
   moveEye,
+  randomizer,
 } from './helper';
 
 import {
@@ -18,6 +19,9 @@ import {
   HAS_EYELIDS,
   PICTURE_LIMIT_SETTING,
   IS_GOOGLY_ON,
+  NORMAL_EYE,
+  RANDOM_EYE,
+  EYE_TYPE_IDX,
 } from './constants';
 
 const googlyContainer = generateElement({
@@ -57,6 +61,12 @@ export default class EyesController {
     const pictureLimit = options?.[PICTURE_LIMIT_SETTING];
     this[PICTURE_LIMIT] = pictureLimit || this[PICTURE_LIMIT];
 
+    const eyeTypeIdx =
+      options?.[EYE_TYPE_IDX] !== undefined
+        ? options?.[EYE_TYPE_IDX]
+        : undefined;
+    this.eyeType = EYE_TYPES[eyeTypeIdx] ?? RANDOM_EYE;
+
     const startImages = document.querySelectorAll('img');
     startImages.forEach((image) => {
       this.intersectObserver.observe(image);
@@ -79,7 +89,7 @@ export default class EyesController {
     const imgId = randomImgId();
     image.setAttribute(IMG_ID_ATTR, imgId);
     faceCoordinates.forEach((faceData) => {
-      const face = new Face(image, faceData, this[HAS_EYELIDS]);
+      const face = new Face(image, faceData, this[HAS_EYELIDS], this.eyeType);
       googlyContainer.append(face.container);
       const faceItem = {
         imgId,
@@ -117,7 +127,7 @@ export default class EyesController {
 }
 
 export class Face {
-  constructor(image, faceData, hasEyeLids) {
+  constructor(image, faceData, hasEyeLids, eyeType) {
     const imgDimensions = image.getBoundingClientRect();
     const computed = getComputedStyle(image);
     const width = computed.width;
@@ -139,7 +149,10 @@ export class Face {
     const scale = stripPixels(width) / image.naturalWidth;
     const eyeSize = face[2] * EYE_SIZE_FACTOR * scale;
     if (eyeSize > EYE_MIN) {
-      const type = EYE_TYPES[0]; // EYE_TYPES[randomizer(EYE_TYPES.length - 1)];
+      const type =
+        eyeType === RANDOM_EYE
+          ? EYE_TYPES[randomizer(EYE_TYPES.length - 1)]
+          : eyeType;
       const leftEye = new Eye(eyeSize, eye1, scale, type, hasEyeLids);
       const rightEye = new Eye(eyeSize, eye2, scale, type, hasEyeLids);
 

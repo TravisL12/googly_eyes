@@ -15,6 +15,8 @@ import {
   IS_GOOGLY_ON,
   PICTURE_LIMIT,
   PICTURE_LIMIT_SETTING,
+  EYE_TYPE_IDX,
+  EYE_TYPES,
 } from '../Content/modules/constants';
 import GoogleEyes from './GoogleEyes';
 
@@ -29,6 +31,7 @@ const initState = {
   [HAS_EYELIDS]: false,
   [PICTURE_LIMIT_SETTING]: 10,
   [IS_GOOGLY_ON]: true,
+  [EYE_TYPE_IDX]: 0,
 };
 
 const Popup = () => {
@@ -42,6 +45,10 @@ const Popup = () => {
       dispatch({
         type: PICTURE_LIMIT_SETTING,
         value: options[PICTURE_LIMIT_SETTING],
+      });
+      dispatch({
+        type: EYE_TYPE_IDX,
+        value: options[EYE_TYPE_IDX],
       });
     });
   }, []);
@@ -60,18 +67,32 @@ const Popup = () => {
     >
       <div className="options">
         <h1>Eye See You!</h1>
-        <div className="eye-preview-section">
-          <div className="eye-container">
-            <GoogleEyes move={move} />
-            <GoogleEyes move={move} hasEyeLids={true} eyeType={GLAM_EYE} />
-            <GoogleEyes move={move} hasEyeLids={true} eyeType={BLUE_EYE} />
-            <GoogleEyes move={move} hasEyeLids={true} eyeType={STONED_EYE} />
-          </div>
-          <div className="eye-container">
-            <GoogleEyes move={move} hasEyeLids={true} eyeType={SLEEPY_EYE} />
-            <GoogleEyes move={move} hasEyeLids={true} eyeType={DROOPY_EYE} />
-            <GoogleEyes move={move} hasEyeLids={true} eyeType={CAT_EYE} />
-            <GoogleEyes move={move} />
+        <div className="eye-container">
+          {EYE_TYPES.map((type, idx) => {
+            return (
+              <GoogleEyes
+                key={type}
+                handleClick={() => {
+                  handleOnChange(EYE_TYPE_IDX, idx);
+                }}
+                isSelected={idx === state[EYE_TYPE_IDX]}
+                move={move}
+                hasEyeLids={state[HAS_EYELIDS]}
+                eyeType={type}
+              />
+            );
+          })}
+          <div
+            className={
+              state[EYE_TYPE_IDX] === EYE_TYPES.length
+                ? 'googly-eyes selected-eye-type'
+                : 'googly-eyes'
+            }
+            onClick={() => {
+              handleOnChange(EYE_TYPE_IDX, EYE_TYPES.length);
+            }}
+          >
+            <h4>Random</h4>
           </div>
         </div>
         <div>
