@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import { EYELID_MAX_PERC } from '../Content/modules/constants';
 import { moveEye } from '../Content/modules/helper';
 
-const Eye = ({ move, size, left, type, hasEyeLids }) => {
+const Eye = ({ move, size, type, hasEyeLids }) => {
   const eyeRef = useRef();
 
   const updateEye = (moveEvent) => {
@@ -34,7 +34,6 @@ const Eye = ({ move, size, left, type, hasEyeLids }) => {
       style={{
         height: size,
         width: size,
-        left,
       }}
     >
       <div

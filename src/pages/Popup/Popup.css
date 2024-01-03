@@ -12,12 +12,25 @@
     margin: 10px 0 20px;
     display: grid;
     grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
 
     .googly-eyes {
+      position: relative;
       border-radius: 5px;
-      padding: 6px 8px;
+      padding: 6px 2px;
       background: var(--transparent-light-black);
       border: 3px solid var(--transparent-light-black);
+
+      .face {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: space-around;
+
+        .eye {
+          position: relative;
+        }
+      }
 
       &.selected-eye-type {
         border-color: var(--black);

@@ -17,6 +17,7 @@ import {
   PICTURE_LIMIT_SETTING,
   EYE_TYPE_IDX,
   EYE_TYPES,
+  RANDOM_EYE,
 } from '../Content/modules/constants';
 import GoogleEyes from './GoogleEyes';
 
@@ -82,18 +83,15 @@ const Popup = () => {
               />
             );
           })}
-          <div
-            className={
-              state[EYE_TYPE_IDX] === EYE_TYPES.length
-                ? 'googly-eyes selected-eye-type'
-                : 'googly-eyes'
-            }
-            onClick={() => {
+          <GoogleEyes
+            handleClick={() => {
               handleOnChange(EYE_TYPE_IDX, EYE_TYPES.length);
             }}
-          >
-            <h4>Random</h4>
-          </div>
+            isSelected={state[EYE_TYPE_IDX] === EYE_TYPES.length}
+            move={move}
+            hasEyeLids={state[HAS_EYELIDS]}
+            eyeType={RANDOM_EYE}
+          />
         </div>
         <div>
           <label htmlFor="is-googly-on">Enable Googly Eyes</label>

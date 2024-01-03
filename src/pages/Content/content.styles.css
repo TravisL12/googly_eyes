@@ -14,6 +14,7 @@
   --sleepy-retina: green;
   --droopy-retina: magenta;
   --cat-retina: purple;
+  --random-retina: cornsilk;
 }
 .googly-eyes .face {
   position: absolute;
@@ -137,6 +138,18 @@
         background: radial-gradient(
           circle,
           var(--cat-retina) 0%,
+          var(--black) 100%
+        );
+      }
+    }
+    &.random {
+      .inner {
+        background: var(--random-retina);
+      }
+      .eye-lid {
+        background: radial-gradient(
+          circle,
+          var(--random-retina) 0%,
           var(--black) 100%
         );
       }
