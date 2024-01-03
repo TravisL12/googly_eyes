@@ -5,8 +5,14 @@ import {
   IS_GOOGLY_ON,
   PICTURE_LIMIT,
   PICTURE_LIMIT_SETTING,
+  RANDOM_EYE,
 } from './modules/constants';
-import { getEyeTypeFromIdx, loadDeps, shuffle } from './modules/helper';
+import {
+  getEyeTypeFromIdx,
+  getRandomEye,
+  loadDeps,
+  shuffle,
+} from './modules/helper';
 import { getStorage } from './modules/storageHelper';
 
 const EYE_MOVE_EVENTS = ['mousemove', 'wheel'];
@@ -85,10 +91,12 @@ const startEyes = () => {
 
         if (changes[EYE_TYPE_IDX]) {
           const eyeType = getEyeTypeFromIdx(changes[EYE_TYPE_IDX].newValue);
+          eyesControl.eyeType = eyeType;
           eyesControl.faces.forEach(({ face }) => {
             const [leftEye, rightEye] = face.eyes;
-            leftEye.changeEyeType(eyeType);
-            rightEye.changeEyeType(eyeType);
+            const type = eyeType === RANDOM_EYE ? getRandomEye() : eyeType;
+            leftEye.changeEyeType(type);
+            rightEye.changeEyeType(type);
           });
         }
       });

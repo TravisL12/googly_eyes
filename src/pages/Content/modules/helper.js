@@ -294,8 +294,8 @@ export const getEyeTypeFromIdx = (idx) => {
   return EYE_TYPES[eyeTypeIdx] ?? RANDOM_EYE;
 };
 
+export const getRandomEye = () => EYE_TYPES[randomizer(EYE_TYPES.length - 1)];
+
 export const getEyeType = (eyeType) => {
-  return eyeType === RANDOM_EYE
-    ? EYE_TYPES[randomizer(EYE_TYPES.length - 1)]
-    : eyeType;
+  return eyeType === RANDOM_EYE ? getRandomEye() : eyeType;
 };

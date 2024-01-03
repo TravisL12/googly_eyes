@@ -5,7 +5,6 @@ import {
   stripPixels,
   randomImgId,
   moveEye,
-  randomizer,
   getEyeType,
   getEyeTypeFromIdx,
 } from './helper';
@@ -17,12 +16,9 @@ import {
   IMG_ID_ATTR,
   EYELID_MAX_PERC,
   PICTURE_LIMIT,
-  EYE_TYPES,
   HAS_EYELIDS,
   PICTURE_LIMIT_SETTING,
   IS_GOOGLY_ON,
-  NORMAL_EYE,
-  RANDOM_EYE,
   EYE_TYPE_IDX,
 } from './constants';
 
