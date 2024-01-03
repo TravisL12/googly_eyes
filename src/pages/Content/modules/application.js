@@ -62,9 +62,7 @@ export default class EyesController {
     this[PICTURE_LIMIT] = pictureLimit || this[PICTURE_LIMIT];
 
     const eyeTypeIdx =
-      options?.[EYE_TYPE_IDX] !== undefined
-        ? options?.[EYE_TYPE_IDX]
-        : undefined;
+      options?.[EYE_TYPE_IDX] !== undefined ? options[EYE_TYPE_IDX] : undefined;
     this.eyeType = EYE_TYPES[eyeTypeIdx] ?? RANDOM_EYE;
 
     const startImages = document.querySelectorAll('img');
