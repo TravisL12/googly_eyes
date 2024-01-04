@@ -54,7 +54,7 @@
       position: absolute;
       width: 60%;
       height: 60%;
-      z-index: 3;
+      z-index: 1;
       border-radius: 50%;
     }
 

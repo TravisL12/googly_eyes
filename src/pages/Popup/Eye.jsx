@@ -12,8 +12,8 @@ const Eye = ({ move, size, type, hasEyeLids }) => {
 
     const eye = eyeRef.current;
     const inner = eye.querySelector('.inner');
-    const lidOpen = eye.querySelector('.eye-lid-open');
-    moveEye({ moveEvent, eye, inner, lidOpen });
+    const lid = eye.querySelector('.eyelid');
+    moveEye({ moveEvent, eye, inner, lidOpen: lid });
   };
 
   useEffect(() => {
@@ -21,11 +21,6 @@ const Eye = ({ move, size, type, hasEyeLids }) => {
       updateEye(move);
     }
   }, [move]);
-
-  const eyeLidStyle = {
-    height: `${EYELID_MAX_PERC - 1}%`,
-    borderRadius: `${size}px ${size}px 0 0`,
-  };
 
   return (
     <div
@@ -44,10 +39,9 @@ const Eye = ({ move, size, type, hasEyeLids }) => {
         }}
       ></div>
       {hasEyeLids && (
-        <>
-          <div className="eye-lid" style={eyeLidStyle}></div>
-          <div className="eye-lid-open" style={eyeLidStyle}></div>
-        </>
+        <div style={{ position: 'absolute', top: 0, left: 0, zIndex: 2 }}>
+          <canvas className="eyelid" height={size} width={size}></canvas>
+        </div>
       )}
     </div>
   );

@@ -67,7 +67,7 @@ const Popup = () => {
       }}
     >
       <div className="options">
-        <h1>Eye See You!</h1>
+        <h1 className="title">Eye See You!</h1>
         <div className="eye-container">
           {EYE_TYPES.map((type, idx) => {
             return (

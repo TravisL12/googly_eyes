@@ -3,7 +3,6 @@ import { NORMAL_EYE } from '../Content/modules/constants';
 import Eye from './Eye';
 
 const EYE_SIZE = 30;
-const EYE_SPACING = EYE_SIZE * 1.2;
 
 const titleCase = (text) => text[0].toUpperCase() + text.slice(1);
 const GoogleEyes = ({

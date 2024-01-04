@@ -76,10 +76,48 @@ export const getFullAngle = (x, y) => {
   return angle2Rads(360 + angleDeg);
 };
 
+const createGradient = (gradient) => {
+  gradient.addColorStop(0, '#1bafdd');
+  gradient.addColorStop(1, 'black');
+};
+const drawEyelid = (openAmount, ctx, radius) => {
+  const halfW = radius;
+  const halfH = radius;
+
+  ctx.reset();
+  ctx.beginPath();
+  ctx.ellipse(halfW, halfH, radius, radius, 0, 0, Math.PI, true);
+
+  const gradient = ctx.createRadialGradient(
+    halfW,
+    halfH,
+    0,
+    halfW,
+    halfH,
+    radius
+  );
+  createGradient(gradient);
+  ctx.fillStyle = gradient;
+
+  if (openAmount < radius) {
+    ctx.ellipse(halfW, halfH, radius, radius - openAmount, 0, 0, Math.PI);
+  } else {
+    ctx.closePath();
+    ctx.fill();
+
+    ctx.globalCompositeOperation = 'destination-out';
+    ctx.beginPath();
+    ctx.ellipse(halfW, halfH, radius, openAmount - radius, 0, 0, Math.PI, true);
+  }
+
+  ctx.closePath();
+  ctx.fill();
+};
+
 export const moveEye = ({ moveEvent, eye, inner, lidOpen }) => {
   const eyeBound = eye.getBoundingClientRect();
   const innerBound = inner.getBoundingClientRect();
-
+  const ctx = lidOpen?.getContext('2d');
   const radius = eyeBound.width / 2;
   const innerRadius = innerBound.width / 2;
 
@@ -115,11 +153,9 @@ export const moveEye = ({ moveEvent, eye, inner, lidOpen }) => {
       ? 2 * deltaRadius
       : deltaRadius - yMax;
 
-    if (lidOpen) {
-      const lidHeight = 100 * (eyeTop / eyeBound.height);
-      const openPerc = Math.min(100, lidHeight);
-      lidOpen.style.height = `${EYELID_MAX_PERC - openPerc}%`;
-      lidOpen.style.top = `${openPerc}%`;
+    if (lidOpen && ctx) {
+      const eyeOverlap = eyeBound.width * 0.1;
+      drawEyelid(eyeBound.width - eyeTop - eyeOverlap, ctx, radius);
     }
 
     inner.style['top'] = `${eyeTop}px`;
@@ -131,7 +167,9 @@ export const generateElement = (
   { tag, className, attributes } = { tag: 'div' }
 ) => {
   const el = document.createElement(tag);
-  el.className = className;
+  if (className) {
+    el.className = className;
+  }
   attributes?.forEach(({ attr, value }) => el.setAttribute(attr, value));
   return el;
 };
