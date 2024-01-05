@@ -189,14 +189,18 @@ class Eye {
     lidContainer.style.position = 'absolute';
     lidContainer.style.top = 0;
     lidContainer.style.left = 0;
+    lidContainer.style.height = '100%';
+    lidContainer.style.width = '100%';
     lidContainer.style.zIndex = 2;
 
     this.lid = generateElement({
       tag: 'canvas',
       className: `eyelid ${lidClass}`,
     });
-    this.lid.height = eyeSize;
-    this.lid.width = eyeSize;
+
+    // canvas height/width floors (rounds) value down
+    this.lid.height = eyeSize * 1.1;
+    this.lid.width = eyeSize * 1.1;
 
     lidContainer.appendChild(this.lid);
 

@@ -77,8 +77,8 @@ export const getFullAngle = (x, y) => {
 };
 
 const createGradient = (gradient) => {
-  gradient.addColorStop(0, '#1bafdd');
-  gradient.addColorStop(1, 'black');
+  gradient.addColorStop(0, 'pink');
+  gradient.addColorStop(1, 'magenta');
 };
 const drawEyelid = (openAmount, ctx, radius) => {
   const halfW = radius;
@@ -96,18 +96,30 @@ const drawEyelid = (openAmount, ctx, radius) => {
     halfH,
     radius
   );
+
   createGradient(gradient);
   ctx.fillStyle = gradient;
 
   if (openAmount < radius) {
+    // look down
     ctx.ellipse(halfW, halfH, radius, radius - openAmount, 0, 0, Math.PI);
   } else {
+    // look up
     ctx.closePath();
     ctx.fill();
 
     ctx.globalCompositeOperation = 'destination-out';
     ctx.beginPath();
-    ctx.ellipse(halfW, halfH, radius, openAmount - radius, 0, 0, Math.PI, true);
+    ctx.ellipse(
+      halfW,
+      halfH * 1.05, // remove subtle ghosting on small eyelids
+      radius,
+      openAmount - radius,
+      0,
+      0,
+      Math.PI,
+      true
+    );
   }
 
   ctx.closePath();
@@ -154,7 +166,7 @@ export const moveEye = ({ moveEvent, eye, inner, lidOpen }) => {
       : deltaRadius - yMax;
 
     if (lidOpen && ctx) {
-      const eyeOverlap = eyeBound.width * 0.1;
+      const eyeOverlap = eyeBound.width * 0.0;
       drawEyelid(eyeBound.width - eyeTop - eyeOverlap, ctx, radius);
     }
 
