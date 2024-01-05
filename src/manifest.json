@@ -12,7 +12,7 @@
     "https://raw.githubusercontent.com/*",
     "https://drone.nenadmarkus.com/*"
   ],
-  "permissions": ["storage"],
+  "permissions": ["storage", "activeTab"],
   "icons": {
     "128": "icon-192.png"
   },
