@@ -8,6 +8,7 @@ import {
   RANDOM_EYE,
 } from './modules/constants';
 import {
+  getEyeType,
   getEyeTypeFromIdx,
   getRandomEye,
   loadDeps,
@@ -91,11 +92,10 @@ const startEyes = () => {
 
         if (changes[EYE_TYPE_IDX]) {
           const eyeType = getEyeTypeFromIdx(changes[EYE_TYPE_IDX].newValue);
-          eyesControl.eyeType = eyeType.name;
+          eyesControl.eyeType = eyeType;
           eyesControl.faces.forEach(({ face }) => {
             const [leftEye, rightEye] = face.eyes;
-            const type =
-              eyeType.name === RANDOM_EYE.name ? getRandomEye() : eyeType;
+            const type = getEyeType(eyeType);
             leftEye.changeEyeType(type.name);
             rightEye.changeEyeType(type.name);
           });
