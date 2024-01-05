@@ -76,16 +76,7 @@ export const getFullAngle = (x, y) => {
   return angle2Rads(360 + angleDeg);
 };
 
-const createGradient = (eyeClasslist, gradient) => {
-  const type = [...EYE_TYPES, RANDOM_EYE].find(
-    ({ name }) => name === eyeClasslist[1]
-  );
-  if (type) {
-    gradient.addColorStop(0, type.colors[0]);
-    gradient.addColorStop(1, type.colors[1] || 'black');
-  }
-};
-const drawEyelid = (eyeClasslist, openAmount, ctx, radius) => {
+const drawEyelid = (eyeType, openAmount, ctx, radius) => {
   const halfW = radius;
   const halfH = radius;
 
@@ -102,8 +93,11 @@ const drawEyelid = (eyeClasslist, openAmount, ctx, radius) => {
     radius
   );
 
-  createGradient(eyeClasslist, gradient);
-  ctx.fillStyle = gradient;
+  if (eyeType) {
+    gradient.addColorStop(0, eyeType.colors[0]);
+    gradient.addColorStop(1, eyeType.colors[1] || 'black');
+    ctx.fillStyle = gradient;
+  }
 
   if (openAmount < radius) {
     // look down
@@ -138,6 +132,10 @@ export const moveEye = ({ moveEvent, eye, inner, eyelid }) => {
   const radius = eyeBound.width / 2;
   const innerRadius = innerBound.width / 2;
 
+  const eyeType = [...EYE_TYPES, RANDOM_EYE].find(
+    ({ name }) => name === Array.from(eye.classList)[1]
+  );
+
   const x = moveEvent.clientX - innerRadius;
   const y = moveEvent.clientY - innerRadius;
 
@@ -171,13 +169,8 @@ export const moveEye = ({ moveEvent, eye, inner, eyelid }) => {
       : deltaRadius - yMax;
 
     if (eyelid && ctx) {
-      const eyeOverlap = eyeBound.width * 0.0;
-      drawEyelid(
-        Array.from(eye.classList),
-        eyeBound.width - eyeTop - eyeOverlap,
-        ctx,
-        radius
-      );
+      const eyeOverlap = eyeType.overlap ? eyeBound.width * eyeType.overlap : 0;
+      drawEyelid(eyeType, eyeBound.width - eyeTop - eyeOverlap, ctx, radius);
     }
 
     inner.style['top'] = `${eyeTop}px`;

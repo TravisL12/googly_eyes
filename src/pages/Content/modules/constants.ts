@@ -1,3 +1,5 @@
+import { TEye } from '../../types';
+
 export const THROTTLE_DELAY = 30;
 export const EYE_MIN = 10;
 export const EYE_SIZE_FACTOR = 0.23;
@@ -11,12 +13,12 @@ export const STONED_EYE = 'stoned';
 export const SLEEPY_EYE = 'sleepy';
 export const DROOPY_EYE = 'droopy';
 export const CAT_EYE = 'cat';
-export const RANDOM_EYE = {
+export const RANDOM_EYE: TEye = {
   name: 'random',
   innerColor: 'cornsilk',
   colors: ['cornsilk'],
 };
-export const EYE_TYPES = [
+export const EYE_TYPES: TEye[] = [
   {
     name: NORMAL_EYE,
     innerColor: '#333',
@@ -24,7 +26,12 @@ export const EYE_TYPES = [
   },
   { name: BLUE_EYE, innerColor: '#1bafdd', colors: ['#1bafdd'] },
   { name: GLAM_EYE, innerColor: 'pink', colors: ['pink'] },
-  { name: STONED_EYE, innerColor: 'lightblue', colors: ['lightblue'] },
+  {
+    name: STONED_EYE,
+    overlap: 0.3,
+    innerColor: 'lightblue',
+    colors: ['lightblue'],
+  },
   { name: SLEEPY_EYE, innerColor: 'green', colors: ['green'] },
   { name: DROOPY_EYE, innerColor: 'magenta', colors: ['magenta'] },
   { name: CAT_EYE, innerColor: 'purple', colors: ['purple'] },
