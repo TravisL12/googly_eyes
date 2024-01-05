@@ -5,12 +5,10 @@ import {
   IS_GOOGLY_ON,
   PICTURE_LIMIT,
   PICTURE_LIMIT_SETTING,
-  RANDOM_EYE,
 } from './modules/constants';
 import {
   getEyeType,
   getEyeTypeFromIdx,
-  getRandomEye,
   loadDeps,
   shuffle,
 } from './modules/helper';
