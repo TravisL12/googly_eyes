@@ -13,28 +13,52 @@ export const STONED_EYE = 'stoned';
 export const SLEEPY_EYE = 'sleepy';
 export const DROOPY_EYE = 'droopy';
 export const CAT_EYE = 'cat';
+const BLACK = '#333';
 export const RANDOM_EYE: TEye = {
   name: 'random',
-  innerColor: 'cornsilk',
-  colors: ['cornsilk'],
+  innerColor: 'HSL(130,17%,49%)',
+  colors: ['HSL(130,17%,49%)', 'HSL(30,96%,60%)'],
 };
 export const EYE_TYPES: TEye[] = [
   {
     name: NORMAL_EYE,
-    innerColor: '#333',
-    colors: ['rgb(254, 190, 190)', 'rgb(245, 211, 176)'],
+    innerColor: BLACK,
+    colors: ['HSL(0,97%,87%)', 'HSL(30,78%,83%)'],
   },
-  { name: BLUE_EYE, innerColor: '#1bafdd', colors: ['#1bafdd'] },
-  { name: GLAM_EYE, innerColor: 'pink', colors: ['pink'] },
+  {
+    name: BLUE_EYE,
+    innerColor: 'HSL(194,78%,20%)',
+    colors: ['HSL(194,78%,49%)', 'HSL(194,78%,30%)'],
+  },
+  {
+    name: GLAM_EYE,
+    overlap: -0.1,
+    innerColor: 'HSL(350,100%,20%)',
+    colors: ['HSL(350,100%,88%)', 'HSL(30,96%,60%)'],
+  },
   {
     name: STONED_EYE,
-    overlap: 0.3,
-    innerColor: 'lightblue',
-    colors: ['lightblue'],
+    overlap: 0.2,
+    innerColor: 'HSL(0,0%,20%)',
+    colors: ['HSL(0,100%,50%)', 'HSL(0,100%,29%)'],
   },
-  { name: SLEEPY_EYE, innerColor: 'green', colors: ['green'] },
-  { name: DROOPY_EYE, innerColor: 'magenta', colors: ['magenta'] },
-  { name: CAT_EYE, overlap: -0.2, innerColor: 'purple', colors: ['purple'] },
+  {
+    name: SLEEPY_EYE,
+    overlap: 0.3,
+    innerColor: 'HSL(120,100%,20%)',
+    colors: ['HSL(120,100%,45%)', 'HSL(120,100%,30%)'],
+  },
+  {
+    name: DROOPY_EYE,
+    innerColor: 'HSL(200,100%,20%)',
+    colors: ['HSL(220,100%,50%)', 'HSL(200,100%,40%)'],
+  },
+  {
+    name: CAT_EYE,
+    overlap: -0.2,
+    innerColor: 'HSL(300,100%,20%)',
+    colors: ['HSL(300,100%,25%)', 'HSL(300,100%,10%)'],
+  },
 ];
 
 // storage options
