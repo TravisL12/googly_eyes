@@ -1,13 +1,16 @@
 import {
-  throttle,
   generateElement,
-  getFace,
   stripPixels,
   randomImgId,
+  throttle,
+} from './utilities';
+
+import {
+  getFace,
   moveEye,
   getEyeType,
   getEyeTypeFromIdx,
-} from './helper';
+} from './eyeUtilities';
 
 import {
   THROTTLE_DELAY,

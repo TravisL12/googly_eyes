@@ -6,12 +6,12 @@ import {
   PICTURE_LIMIT,
   PICTURE_LIMIT_SETTING,
 } from './modules/constants';
+import { shuffle } from './modules/utilities';
 import {
   getEyeType,
   getEyeTypeFromIdx,
   loadDeps,
-  shuffle,
-} from './modules/helper';
+} from './modules/eyeUtilities';
 import { getStorage } from './modules/storageHelper';
 
 const EYE_MOVE_EVENTS = ['mousemove', 'wheel'];

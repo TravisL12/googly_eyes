@@ -34,7 +34,7 @@ export const EYE_TYPES: TEye[] = [
   },
   { name: SLEEPY_EYE, innerColor: 'green', colors: ['green'] },
   { name: DROOPY_EYE, innerColor: 'magenta', colors: ['magenta'] },
-  { name: CAT_EYE, innerColor: 'purple', colors: ['purple'] },
+  { name: CAT_EYE, overlap: -0.2, innerColor: 'purple', colors: ['purple'] },
 ];
 
 // storage options

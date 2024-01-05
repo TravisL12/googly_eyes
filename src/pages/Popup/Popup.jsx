@@ -5,12 +5,6 @@ import './Popup.css';
 import '../Content/content.styles.css';
 import { getStorage, setStorage } from '../Content/modules/storageHelper';
 import {
-  BLUE_EYE,
-  GLAM_EYE,
-  STONED_EYE,
-  SLEEPY_EYE,
-  DROOPY_EYE,
-  CAT_EYE,
   HAS_EYELIDS,
   IS_GOOGLY_ON,
   PICTURE_LIMIT,

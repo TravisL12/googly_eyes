@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { moveEye } from '../Content/modules/helper';
+import { moveEye } from '../Content/modules/eyeUtilities';
 
 const Eye = ({ move, size, type, hasEyeLids }) => {
   const eyeRef = useRef();
