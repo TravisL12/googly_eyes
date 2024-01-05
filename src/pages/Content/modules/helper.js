@@ -76,11 +76,16 @@ export const getFullAngle = (x, y) => {
   return angle2Rads(360 + angleDeg);
 };
 
-const createGradient = (gradient) => {
-  gradient.addColorStop(0, 'pink');
-  gradient.addColorStop(1, 'magenta');
+const createGradient = (eyeClasslist, gradient) => {
+  const type = [...EYE_TYPES, RANDOM_EYE].find(
+    ({ name }) => name === eyeClasslist[1]
+  );
+  if (type) {
+    gradient.addColorStop(0, type.colors[0]);
+    gradient.addColorStop(1, type.colors[1] || 'black');
+  }
 };
-const drawEyelid = (openAmount, ctx, radius) => {
+const drawEyelid = (eyeClasslist, openAmount, ctx, radius) => {
   const halfW = radius;
   const halfH = radius;
 
@@ -97,7 +102,7 @@ const drawEyelid = (openAmount, ctx, radius) => {
     radius
   );
 
-  createGradient(gradient);
+  createGradient(eyeClasslist, gradient);
   ctx.fillStyle = gradient;
 
   if (openAmount < radius) {
@@ -165,9 +170,14 @@ export const moveEye = ({ moveEvent, eye, inner, eyelid }) => {
       ? 2 * deltaRadius
       : deltaRadius - yMax;
 
-    if (lidOpen && ctx) {
+    if (eyelid && ctx) {
       const eyeOverlap = eyeBound.width * 0.0;
-      drawEyelid(eyeBound.width - eyeTop - eyeOverlap, ctx, radius);
+      drawEyelid(
+        Array.from(eye.classList),
+        eyeBound.width - eyeTop - eyeOverlap,
+        ctx,
+        radius
+      );
     }
 
     inner.style['top'] = `${eyeTop}px`;
@@ -352,5 +362,5 @@ export const getEyeTypeFromIdx = (idx) => {
 export const getRandomEye = () => EYE_TYPES[randomizer(EYE_TYPES.length - 1)];
 
 export const getEyeType = (eyeType) => {
-  return eyeType === RANDOM_EYE ? getRandomEye() : eyeType;
+  return eyeType.name === RANDOM_EYE.name ? getRandomEye() : eyeType;
 };

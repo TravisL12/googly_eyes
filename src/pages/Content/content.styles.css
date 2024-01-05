@@ -47,96 +47,40 @@
       .inner {
         background: var(--black);
       }
-      .eye-lid {
-        background: radial-gradient(
-          circle,
-          rgb(254, 190, 190) 0%,
-          rgb(245, 211, 176) 100%
-        );
-      }
     }
     &.blue {
       .inner {
         background: var(--blue-retina);
-      }
-      .eye-lid {
-        background: radial-gradient(
-          circle,
-          var(--blue-retina) 0%,
-          var(--black) 100%
-        );
       }
     }
     &.glam {
       .inner {
         background: var(--glam-retina);
       }
-      .eye-lid {
-        background: radial-gradient(
-          circle,
-          var(--glam-retina) 0%,
-          var(--black) 100%
-        );
-      }
     }
     &.stoned {
       .inner {
         background: var(--stoned-retina);
-      }
-      .eye-lid {
-        background: radial-gradient(
-          circle,
-          var(--stoned-retina) 0%,
-          var(--black) 100%
-        );
       }
     }
     &.sleepy {
       .inner {
         background: var(--sleepy-retina);
       }
-      .eye-lid {
-        background: radial-gradient(
-          circle,
-          var(--sleepy-retina) 0%,
-          var(--black) 100%
-        );
-      }
     }
     &.droopy {
       .inner {
         background: var(--droopy-retina);
-      }
-      .eye-lid {
-        background: radial-gradient(
-          circle,
-          var(--droopy-retina) 0%,
-          var(--black) 100%
-        );
       }
     }
     &.cat {
       .inner {
         background: var(--cat-retina);
       }
-      .eye-lid {
-        background: radial-gradient(
-          circle,
-          var(--cat-retina) 0%,
-          var(--black) 100%
-        );
-      }
     }
     &.random {
       .inner {
         background: var(--random-retina);
-      }
-      .eye-lid {
-        background: radial-gradient(
-          circle,
-          var(--random-retina) 0%,
-          var(--black) 100%
-        );
       }
     }
   }

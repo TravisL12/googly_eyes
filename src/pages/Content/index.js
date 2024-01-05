@@ -91,12 +91,13 @@ const startEyes = () => {
 
         if (changes[EYE_TYPE_IDX]) {
           const eyeType = getEyeTypeFromIdx(changes[EYE_TYPE_IDX].newValue);
-          eyesControl.eyeType = eyeType;
+          eyesControl.eyeType = eyeType.name;
           eyesControl.faces.forEach(({ face }) => {
             const [leftEye, rightEye] = face.eyes;
-            const type = eyeType === RANDOM_EYE ? getRandomEye() : eyeType;
-            leftEye.changeEyeType(type);
-            rightEye.changeEyeType(type);
+            const type =
+              eyeType.name === RANDOM_EYE.name ? getRandomEye() : eyeType;
+            leftEye.changeEyeType(type.name);
+            rightEye.changeEyeType(type.name);
           });
         }
       });

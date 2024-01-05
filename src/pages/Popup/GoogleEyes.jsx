@@ -24,17 +24,17 @@ const GoogleEyes = ({
             move={move}
             hasEyeLids={hasEyeLids}
             size={EYE_SIZE}
-            type={eyeType}
+            type={eyeType.name}
           />
           <Eye
             move={move}
             hasEyeLids={hasEyeLids}
             size={EYE_SIZE}
-            type={eyeType}
+            type={eyeType.name}
           />
         </div>
       </div>
-      <h4 className="eye-type-title">{titleCase(eyeType)}</h4>
+      <h4 className="eye-type-title">{titleCase(eyeType.name)}</h4>
     </div>
   );
 };

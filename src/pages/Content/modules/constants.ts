@@ -11,15 +11,15 @@ export const STONED_EYE = 'stoned';
 export const SLEEPY_EYE = 'sleepy';
 export const DROOPY_EYE = 'droopy';
 export const CAT_EYE = 'cat';
-export const RANDOM_EYE = 'random';
+export const RANDOM_EYE = { name: 'random', colors: ['cornsilk'] };
 export const EYE_TYPES = [
-  NORMAL_EYE,
-  BLUE_EYE,
-  GLAM_EYE,
-  STONED_EYE,
-  SLEEPY_EYE,
-  DROOPY_EYE,
-  CAT_EYE,
+  { name: NORMAL_EYE, colors: ['rgb(254, 190, 190)', 'rgb(245, 211, 176)'] },
+  { name: BLUE_EYE, colors: ['#1bafdd'] },
+  { name: GLAM_EYE, colors: ['pink'] },
+  { name: STONED_EYE, colors: ['lightblue'] },
+  { name: SLEEPY_EYE, colors: ['green'] },
+  { name: DROOPY_EYE, colors: ['magenta'] },
+  { name: CAT_EYE, colors: ['purple'] },
 ];
 
 // storage options

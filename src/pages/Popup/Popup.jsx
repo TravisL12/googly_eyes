@@ -72,7 +72,7 @@ const Popup = () => {
           {EYE_TYPES.map((type, idx) => {
             return (
               <GoogleEyes
-                key={type}
+                key={type.name}
                 handleClick={() => {
                   handleOnChange(EYE_TYPE_IDX, idx);
                 }}

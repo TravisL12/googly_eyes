@@ -167,13 +167,13 @@ export class Face {
 
 class Eye {
   constructor(eyeSize, eyeData, scale, eyeType, hasEyeLids = true) {
-    this.type = eyeType || '';
+    this.eyeType = eyeType || '';
     const halfEye = eyeSize / 2;
     const [posTop, posLeft] = eyeData;
 
     this.eye = generateElement({
       tag: 'div',
-      className: `eye ${this.type}`,
+      className: `eye ${this.eyeType.name}`,
       styles: {
         height: `${eyeSize}px`,
         width: `${eyeSize}px`,
@@ -223,6 +223,5 @@ class Eye {
   // to represent showing the eyelids
   toggleEyeLids(isOn) {
     this.lid.classList.toggle('none', !isOn);
-    this.lidOpen.classList.toggle('none', !isOn);
   }
 }
