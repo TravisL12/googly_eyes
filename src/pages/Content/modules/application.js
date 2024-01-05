@@ -14,7 +14,6 @@ import {
   EYE_MIN,
   EYE_SIZE_FACTOR,
   IMG_ID_ATTR,
-  EYELID_MAX_PERC,
   PICTURE_LIMIT,
   HAS_EYELIDS,
   PICTURE_LIMIT_SETTING,
@@ -133,9 +132,11 @@ export class Face {
       tag: 'div',
       className: 'face',
       attributes: [{ attr: IMG_ID_ATTR, value: imageId }],
+      styles: {
+        top: `${imgDimensions.top + docTop}px`,
+        left: `${imgDimensions.left}px`,
+      },
     });
-    this.container.style.top = `${imgDimensions.top + docTop}px`;
-    this.container.style.left = `${imgDimensions.left}px`;
 
     const { face, eye1, eye2 } = faceData;
 
@@ -158,50 +159,60 @@ export class Face {
       const eyeObj = this.eyes[i];
       if (!eyeObj) continue;
 
-      const { eye, inner, lidOpen } = eyeObj;
-      moveEye({ moveEvent: event, eye, inner, lidOpen });
+      const { eye, inner, lid } = eyeObj;
+      moveEye({ moveEvent: event, eye, inner, eyelid: lid });
     }
   }
 }
 
 class Eye {
   constructor(eyeSize, eyeData, scale, eyeType, hasEyeLids = true) {
-    this.type = eyeType || '';
-    this.eye = generateElement({ tag: 'div', className: `eye ${this.type}` });
+    this.eyeType = eyeType || '';
     const halfEye = eyeSize / 2;
     const [posTop, posLeft] = eyeData;
 
-    this.eye.style.height = `${eyeSize}px`;
-    this.eye.style.width = `${eyeSize}px`;
-    this.eye.style.top = `${scale * (posTop - halfEye)}px`;
-    this.eye.style.left = `${scale * (posLeft - halfEye)}px`;
+    this.eye = generateElement({
+      tag: 'div',
+      className: `eye ${this.eyeType.name}`,
+      styles: {
+        height: `${eyeSize}px`,
+        width: `${eyeSize}px`,
+        top: `${scale * (posTop - halfEye)}px`,
+        left: `${scale * (posLeft - halfEye)}px`,
+      },
+    });
 
     this.inner = generateElement({
       tag: 'div',
       className: `inner`,
     });
 
-    const lidHeight = `${EYELID_MAX_PERC - 1}%`;
-    const lidBorderRadius = `${eyeSize}px ${eyeSize}px 0 0`;
     const lidClass = hasEyeLids ? '' : 'none';
-    this.lid = generateElement({
+    const lidContainer = generateElement({
       tag: 'div',
-      className: `eye-lid ${lidClass}`,
+      styles: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        height: '100%',
+        width: '100%',
+        zIndex: 2,
+      },
     });
-    this.lid.style.height = lidHeight;
-    this.lid.style.borderRadius = lidBorderRadius;
 
-    this.lidOpen = generateElement({
-      tag: 'div',
-      className: `eye-lid-open ${lidClass}`,
+    this.lid = generateElement({
+      tag: 'canvas',
+      className: `eyelid ${lidClass}`,
     });
-    this.lidOpen.style.height = lidHeight;
-    this.lidOpen.style.borderRadius = lidBorderRadius;
+
+    // canvas height/width floors (rounds) value down
+    this.lid.height = eyeSize * 1.1;
+    this.lid.width = eyeSize * 1.1;
+
+    lidContainer.appendChild(this.lid);
 
     this.eye.appendChild(this.inner);
-
-    this.eye.appendChild(this.lid);
-    this.eye.appendChild(this.lidOpen);
+    this.eye.appendChild(lidContainer);
   }
 
   changeEyeType(newType) {
@@ -212,6 +223,5 @@ class Eye {
   // to represent showing the eyelids
   toggleEyeLids(isOn) {
     this.lid.classList.toggle('none', !isOn);
-    this.lidOpen.classList.toggle('none', !isOn);
   }
 }

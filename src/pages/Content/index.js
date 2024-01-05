@@ -5,11 +5,10 @@ import {
   IS_GOOGLY_ON,
   PICTURE_LIMIT,
   PICTURE_LIMIT_SETTING,
-  RANDOM_EYE,
 } from './modules/constants';
 import {
+  getEyeType,
   getEyeTypeFromIdx,
-  getRandomEye,
   loadDeps,
   shuffle,
 } from './modules/helper';
@@ -94,9 +93,9 @@ const startEyes = () => {
           eyesControl.eyeType = eyeType;
           eyesControl.faces.forEach(({ face }) => {
             const [leftEye, rightEye] = face.eyes;
-            const type = eyeType === RANDOM_EYE ? getRandomEye() : eyeType;
-            leftEye.changeEyeType(type);
-            rightEye.changeEyeType(type);
+            const type = getEyeType(eyeType);
+            leftEye.changeEyeType(type.name);
+            rightEye.changeEyeType(type.name);
           });
         }
       });

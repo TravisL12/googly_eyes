@@ -1,5 +1,5 @@
 import pico from 'picojs';
-import { EYELID_MAX_PERC, EYE_TYPES, RANDOM_EYE } from './constants';
+import { EYE_TYPES, RANDOM_EYE } from './constants';
 import lploc from './lploc';
 
 export function randomizer(max = 1, min = 0) {
@@ -76,10 +76,65 @@ export const getFullAngle = (x, y) => {
   return angle2Rads(360 + angleDeg);
 };
 
-export const moveEye = ({ moveEvent, eye, inner, lidOpen }) => {
+const createGradient = (eyeClasslist, gradient) => {
+  const type = [...EYE_TYPES, RANDOM_EYE].find(
+    ({ name }) => name === eyeClasslist[1]
+  );
+  if (type) {
+    gradient.addColorStop(0, type.colors[0]);
+    gradient.addColorStop(1, type.colors[1] || 'black');
+  }
+};
+const drawEyelid = (eyeClasslist, openAmount, ctx, radius) => {
+  const halfW = radius;
+  const halfH = radius;
+
+  ctx.reset();
+  ctx.beginPath();
+  ctx.ellipse(halfW, halfH, radius, radius, 0, 0, Math.PI, true);
+
+  const gradient = ctx.createRadialGradient(
+    halfW,
+    halfH,
+    0,
+    halfW,
+    halfH,
+    radius
+  );
+
+  createGradient(eyeClasslist, gradient);
+  ctx.fillStyle = gradient;
+
+  if (openAmount < radius) {
+    // look down
+    ctx.ellipse(halfW, halfH, radius, radius - openAmount, 0, 0, Math.PI);
+  } else {
+    // look up
+    ctx.closePath();
+    ctx.fill();
+
+    ctx.globalCompositeOperation = 'destination-out';
+    ctx.beginPath();
+    ctx.ellipse(
+      halfW,
+      halfH * 1.05, // remove subtle ghosting on small eyelids
+      radius,
+      openAmount - radius,
+      0,
+      0,
+      Math.PI,
+      true
+    );
+  }
+
+  ctx.closePath();
+  ctx.fill();
+};
+
+export const moveEye = ({ moveEvent, eye, inner, eyelid }) => {
   const eyeBound = eye.getBoundingClientRect();
   const innerBound = inner.getBoundingClientRect();
-
+  const ctx = eyelid?.getContext('2d');
   const radius = eyeBound.width / 2;
   const innerRadius = innerBound.width / 2;
 
@@ -115,11 +170,14 @@ export const moveEye = ({ moveEvent, eye, inner, lidOpen }) => {
       ? 2 * deltaRadius
       : deltaRadius - yMax;
 
-    if (lidOpen) {
-      const lidHeight = 100 * (eyeTop / eyeBound.height);
-      const openPerc = Math.min(100, lidHeight);
-      lidOpen.style.height = `${EYELID_MAX_PERC - openPerc}%`;
-      lidOpen.style.top = `${openPerc}%`;
+    if (eyelid && ctx) {
+      const eyeOverlap = eyeBound.width * 0.0;
+      drawEyelid(
+        Array.from(eye.classList),
+        eyeBound.width - eyeTop - eyeOverlap,
+        ctx,
+        radius
+      );
     }
 
     inner.style['top'] = `${eyeTop}px`;
@@ -128,10 +186,17 @@ export const moveEye = ({ moveEvent, eye, inner, lidOpen }) => {
 };
 
 export const generateElement = (
-  { tag, className, attributes } = { tag: 'div' }
+  { tag, className, attributes, styles } = { tag: 'div' }
 ) => {
   const el = document.createElement(tag);
-  el.className = className;
+  if (className) {
+    el.className = className;
+  }
+  if (styles) {
+    Object.entries(styles).forEach(
+      ([style, value]) => (el.style[style] = value)
+    );
+  }
   attributes?.forEach(({ attr, value }) => el.setAttribute(attr, value));
   return el;
 };
@@ -297,5 +362,5 @@ export const getEyeTypeFromIdx = (idx) => {
 export const getRandomEye = () => EYE_TYPES[randomizer(EYE_TYPES.length - 1)];
 
 export const getEyeType = (eyeType) => {
-  return eyeType === RANDOM_EYE ? getRandomEye() : eyeType;
+  return eyeType.name === RANDOM_EYE.name ? getRandomEye() : eyeType;
 };
