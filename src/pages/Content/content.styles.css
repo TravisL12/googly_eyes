@@ -6,16 +6,8 @@
   --transparent-light-black: rgba(0, 0, 0, 0.05);
   --page-width: 650px;
   --eye-size: 20px;
-
-  --mid-eye: #6e7b7d;
-  --blue-retina: #1bafdd;
-  --glam-retina: pink;
-  --stoned-retina: lightblue;
-  --sleepy-retina: green;
-  --droopy-retina: magenta;
-  --cat-retina: purple;
-  --random-retina: cornsilk;
 }
+
 .googly-eyes .face {
   position: absolute;
   z-index: 1;
