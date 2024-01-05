@@ -11,15 +11,23 @@ export const STONED_EYE = 'stoned';
 export const SLEEPY_EYE = 'sleepy';
 export const DROOPY_EYE = 'droopy';
 export const CAT_EYE = 'cat';
-export const RANDOM_EYE = { name: 'random', colors: ['cornsilk'] };
+export const RANDOM_EYE = {
+  name: 'random',
+  innerColor: 'cornsilk',
+  colors: ['cornsilk'],
+};
 export const EYE_TYPES = [
-  { name: NORMAL_EYE, colors: ['rgb(254, 190, 190)', 'rgb(245, 211, 176)'] },
-  { name: BLUE_EYE, colors: ['#1bafdd'] },
-  { name: GLAM_EYE, colors: ['pink'] },
-  { name: STONED_EYE, colors: ['lightblue'] },
-  { name: SLEEPY_EYE, colors: ['green'] },
-  { name: DROOPY_EYE, colors: ['magenta'] },
-  { name: CAT_EYE, colors: ['purple'] },
+  {
+    name: NORMAL_EYE,
+    innerColor: '#333',
+    colors: ['rgb(254, 190, 190)', 'rgb(245, 211, 176)'],
+  },
+  { name: BLUE_EYE, innerColor: '#1bafdd', colors: ['#1bafdd'] },
+  { name: GLAM_EYE, innerColor: 'pink', colors: ['pink'] },
+  { name: STONED_EYE, innerColor: 'lightblue', colors: ['lightblue'] },
+  { name: SLEEPY_EYE, innerColor: 'green', colors: ['green'] },
+  { name: DROOPY_EYE, innerColor: 'magenta', colors: ['magenta'] },
+  { name: CAT_EYE, innerColor: 'purple', colors: ['purple'] },
 ];
 
 // storage options

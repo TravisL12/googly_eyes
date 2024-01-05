@@ -94,8 +94,8 @@ const startEyes = () => {
           eyesControl.faces.forEach(({ face }) => {
             const [leftEye, rightEye] = face.eyes;
             const type = getEyeType(eyeType);
-            leftEye.changeEyeType(type.name);
-            rightEye.changeEyeType(type.name);
+            leftEye.changeEyeType(type);
+            rightEye.changeEyeType(type);
           });
         }
       });

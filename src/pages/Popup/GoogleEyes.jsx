@@ -24,13 +24,13 @@ const GoogleEyes = ({
             move={move}
             hasEyeLids={hasEyeLids}
             size={EYE_SIZE}
-            type={eyeType.name}
+            type={eyeType}
           />
           <Eye
             move={move}
             hasEyeLids={hasEyeLids}
             size={EYE_SIZE}
-            type={eyeType.name}
+            type={eyeType}
           />
         </div>
       </div>

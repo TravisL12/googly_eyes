@@ -24,7 +24,7 @@ const Eye = ({ move, size, type, hasEyeLids }) => {
   return (
     <div
       ref={eyeRef}
-      className={`eye ${type}`}
+      className={`eye ${type.name}`}
       style={{
         height: size,
         width: size,
@@ -35,6 +35,7 @@ const Eye = ({ move, size, type, hasEyeLids }) => {
         style={{
           top: size / 4,
           left: size / 4,
+          background: type.innerColor,
         }}
       ></div>
       {hasEyeLids && (

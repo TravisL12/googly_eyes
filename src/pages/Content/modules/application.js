@@ -185,6 +185,7 @@ class Eye {
     this.inner = generateElement({
       tag: 'div',
       className: `inner`,
+      styles: { background: eyeType.innerColor },
     });
 
     const lidClass = hasEyeLids ? '' : 'none';
@@ -216,7 +217,8 @@ class Eye {
   }
 
   changeEyeType(newType) {
-    this.eye.classList = `eye ${newType}`;
+    this.eye.classList = `eye ${newType.name}`;
+    this.inner.style.background = newType.innerColor;
   }
 
   // toggling "none" is the `true` case, so set opposite of `true` (i.e. `false`)
