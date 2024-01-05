@@ -14,7 +14,6 @@ import {
   EYE_MIN,
   EYE_SIZE_FACTOR,
   IMG_ID_ATTR,
-  EYELID_MAX_PERC,
   PICTURE_LIMIT,
   HAS_EYELIDS,
   PICTURE_LIMIT_SETTING,
@@ -133,9 +132,11 @@ export class Face {
       tag: 'div',
       className: 'face',
       attributes: [{ attr: IMG_ID_ATTR, value: imageId }],
+      styles: {
+        top: `${imgDimensions.top + docTop}px`,
+        left: `${imgDimensions.left}px`,
+      },
     });
-    this.container.style.top = `${imgDimensions.top + docTop}px`;
-    this.container.style.left = `${imgDimensions.left}px`;
 
     const { face, eye1, eye2 } = faceData;
 
@@ -159,7 +160,7 @@ export class Face {
       if (!eyeObj) continue;
 
       const { eye, inner, lid } = eyeObj;
-      moveEye({ moveEvent: event, eye, inner, lidOpen: lid });
+      moveEye({ moveEvent: event, eye, inner, eyelid: lid });
     }
   }
 }
@@ -167,14 +168,19 @@ export class Face {
 class Eye {
   constructor(eyeSize, eyeData, scale, eyeType, hasEyeLids = true) {
     this.type = eyeType || '';
-    this.eye = generateElement({ tag: 'div', className: `eye ${this.type}` });
     const halfEye = eyeSize / 2;
     const [posTop, posLeft] = eyeData;
 
-    this.eye.style.height = `${eyeSize}px`;
-    this.eye.style.width = `${eyeSize}px`;
-    this.eye.style.top = `${scale * (posTop - halfEye)}px`;
-    this.eye.style.left = `${scale * (posLeft - halfEye)}px`;
+    this.eye = generateElement({
+      tag: 'div',
+      className: `eye ${this.type}`,
+      styles: {
+        height: `${eyeSize}px`,
+        width: `${eyeSize}px`,
+        top: `${scale * (posTop - halfEye)}px`,
+        left: `${scale * (posLeft - halfEye)}px`,
+      },
+    });
 
     this.inner = generateElement({
       tag: 'div',
@@ -184,14 +190,15 @@ class Eye {
     const lidClass = hasEyeLids ? '' : 'none';
     const lidContainer = generateElement({
       tag: 'div',
+      styles: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        height: '100%',
+        width: '100%',
+        zIndex: 2,
+      },
     });
-
-    lidContainer.style.position = 'absolute';
-    lidContainer.style.top = 0;
-    lidContainer.style.left = 0;
-    lidContainer.style.height = '100%';
-    lidContainer.style.width = '100%';
-    lidContainer.style.zIndex = 2;
 
     this.lid = generateElement({
       tag: 'canvas',

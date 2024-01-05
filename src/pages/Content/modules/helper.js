@@ -1,5 +1,5 @@
 import pico from 'picojs';
-import { EYELID_MAX_PERC, EYE_TYPES, RANDOM_EYE } from './constants';
+import { EYE_TYPES, RANDOM_EYE } from './constants';
 import lploc from './lploc';
 
 export function randomizer(max = 1, min = 0) {
@@ -126,10 +126,10 @@ const drawEyelid = (openAmount, ctx, radius) => {
   ctx.fill();
 };
 
-export const moveEye = ({ moveEvent, eye, inner, lidOpen }) => {
+export const moveEye = ({ moveEvent, eye, inner, eyelid }) => {
   const eyeBound = eye.getBoundingClientRect();
   const innerBound = inner.getBoundingClientRect();
-  const ctx = lidOpen?.getContext('2d');
+  const ctx = eyelid?.getContext('2d');
   const radius = eyeBound.width / 2;
   const innerRadius = innerBound.width / 2;
 
@@ -176,11 +176,16 @@ export const moveEye = ({ moveEvent, eye, inner, lidOpen }) => {
 };
 
 export const generateElement = (
-  { tag, className, attributes } = { tag: 'div' }
+  { tag, className, attributes, styles } = { tag: 'div' }
 ) => {
   const el = document.createElement(tag);
   if (className) {
     el.className = className;
+  }
+  if (styles) {
+    Object.entries(styles).forEach(
+      ([style, value]) => (el.style[style] = value)
+    );
   }
   attributes?.forEach(({ attr, value }) => el.setAttribute(attr, value));
   return el;

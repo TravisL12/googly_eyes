@@ -1,5 +1,4 @@
 import React, { useEffect, useRef } from 'react';
-import { EYELID_MAX_PERC } from '../Content/modules/constants';
 import { moveEye } from '../Content/modules/helper';
 
 const Eye = ({ move, size, type, hasEyeLids }) => {
@@ -12,8 +11,8 @@ const Eye = ({ move, size, type, hasEyeLids }) => {
 
     const eye = eyeRef.current;
     const inner = eye.querySelector('.inner');
-    const lid = eye.querySelector('.eyelid');
-    moveEye({ moveEvent, eye, inner, lidOpen: lid });
+    const eyelid = eye.querySelector('.eyelid');
+    moveEye({ moveEvent, eye, inner, eyelid });
   };
 
   useEffect(() => {
