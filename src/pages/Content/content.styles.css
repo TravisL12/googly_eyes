@@ -29,8 +29,8 @@
       top: 0;
       left: 0;
       position: absolute;
-      width: 60%;
-      height: 60%;
+      width: 60%; /* defaults to 60% but overridden by eyeType */
+      height: 60%; /* defaults to 60% but overridden by eyeType */
       z-index: 1;
       border-radius: 50%;
     }

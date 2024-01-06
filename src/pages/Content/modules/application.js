@@ -188,7 +188,11 @@ class Eye {
     this.inner = generateElement({
       tag: 'div',
       className: `inner`,
-      styles: { background: eyeType.innerColor },
+      styles: {
+        background: eyeType.innerColor,
+        height: `${100 * eyeType.innerSize}%`,
+        width: `${100 * eyeType.innerSize}%`,
+      },
     });
 
     const lidClass = hasEyeLids ? '' : 'none';

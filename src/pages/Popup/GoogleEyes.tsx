@@ -1,17 +1,25 @@
 import React from 'react';
-import { NORMAL_EYE } from '../Content/modules/constants';
+import { TEye } from '../types';
 import Eye from './Eye';
 
 const EYE_SIZE = 30;
 
-const titleCase = (text) => text[0].toUpperCase() + text.slice(1);
+type TProps = {
+  move: React.MouseEvent;
+  hasEyeLids: boolean;
+  handleClick: () => void;
+  isSelected: boolean;
+  eyeType: TEye;
+};
+
+const titleCase = (text: string) => text[0].toUpperCase() + text.slice(1);
 const GoogleEyes = ({
   move,
   hasEyeLids,
   handleClick,
   isSelected,
-  eyeType = NORMAL_EYE,
-}) => {
+  eyeType,
+}: TProps) => {
   return (
     <div>
       <div

@@ -1,10 +1,19 @@
 import React, { useEffect, useRef } from 'react';
+// @ts-ignore
 import { moveEye } from '../Content/modules/eyeUtilities';
+import { TEye } from '../types';
 
-const Eye = ({ move, size, type, hasEyeLids }) => {
-  const eyeRef = useRef();
+type TProps = {
+  move: React.MouseEvent;
+  size: number;
+  type: TEye;
+  hasEyeLids: boolean;
+};
 
-  const updateEye = (moveEvent) => {
+const Eye = ({ move, size, type, hasEyeLids }: TProps) => {
+  const eyeRef = useRef<Element | null>();
+
+  const updateEye = (moveEvent: React.MouseEvent) => {
     if (!eyeRef?.current) {
       return;
     }
@@ -23,6 +32,7 @@ const Eye = ({ move, size, type, hasEyeLids }) => {
 
   return (
     <div
+      // @ts-ignore
       ref={eyeRef}
       className={`eye ${type.name}`}
       style={{
@@ -35,6 +45,8 @@ const Eye = ({ move, size, type, hasEyeLids }) => {
         style={{
           top: size / 4,
           left: size / 4,
+          height: type.innerSize * size,
+          width: type.innerSize * size,
           background: type.innerColor,
         }}
       ></div>
