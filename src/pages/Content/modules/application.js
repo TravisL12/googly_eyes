@@ -1,8 +1,12 @@
+import React, { useEffect, useMemo, useState } from 'react';
+import { createRoot } from 'react-dom/client';
+
 import {
   generateElement,
   stripPixels,
   randomImgId,
   throttle,
+  shuffle,
 } from './utilities';
 
 import {
@@ -29,6 +33,62 @@ const googlyContainer = generateElement({
   className: 'googly-eyes',
 });
 document.body.appendChild(googlyContainer);
+
+const root = createRoot(googlyContainer); // createRoot(container!) if you use TypeScript
+root.render(<EyesContainer />);
+
+const EyesContainer = () => {
+  const [faces, setFaces] = useState([]);
+
+  const intersectObserver = useMemo(() => {
+    return new IntersectionObserver(
+      (entries) => {
+        const inter = entries.filter((e) => e.isIntersecting);
+        shuffle(inter).forEach((entry) => {
+          drawEyes(entry.target);
+        });
+
+        const notInter = entries.filter((e) => !e.isIntersecting);
+        notInter.forEach((entry) => {
+          undraw(entry.target);
+        });
+      },
+      { threshold: 0.2 }
+    );
+  }, []);
+
+  const mutationObserver = useMemo(() => {
+    return new MutationObserver((mutationList) => {
+      mutationList.forEach((listItem) => {
+        const imageMap = Array.from(listItem.addedNodes).reduce(
+          (accum, node) => {
+            if (!node?.querySelectorAll) {
+              return accum;
+            }
+            const imgs = node.querySelectorAll('img');
+            return accum.concat(Array.from(imgs));
+          },
+          []
+        );
+
+        imageMap.flat().forEach((image) => {
+          intersectObserver.observe(image);
+        });
+      });
+    });
+  }, []);
+
+  useEffect(() => {
+    if (mutationObserver) {
+      mutationObserver.observe(document.body, {
+        subtree: true,
+        childList: true,
+      });
+    }
+  }, [mutationObserver]);
+
+  return faces;
+};
 
 export default class EyesController {
   constructor(intersectObserver) {
