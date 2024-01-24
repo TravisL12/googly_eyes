@@ -150,7 +150,7 @@ export class Face {
     if (eyeSize > EYE_MIN) {
       const type = getEyeType(eyeType);
       const angle = getEyeAngle(eye1, eye2);
-      console.log(angle, 'eye angle');
+
       const leftEye = new Eye({
         eyeSize,
         eyeData: eye1,
