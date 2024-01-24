@@ -16,7 +16,7 @@ for (var entryName in config.entry) {
   if (excludeEntriesToHotReload.indexOf(entryName) === -1) {
     config.entry[entryName] = [
       'webpack/hot/dev-server',
-      `webpack-dev-server/client?hot=true&hostname=localhost&port=${env.PORT}`,
+      `webpack-dev-server/client?hot=false&hostname=localhost&port=${env.PORT}`,
     ].concat(config.entry[entryName]);
   }
 }
@@ -28,7 +28,7 @@ var compiler = webpack(config);
 var server = new WebpackDevServer(
   {
     https: false,
-    hot: true,
+    hot: false,
     liveReload: false,
     client: {
       webSocketTransport: 'sockjs',

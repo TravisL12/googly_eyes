@@ -6,6 +6,7 @@ export const EYE_SIZE_FACTOR = 0.23;
 export const IMG_ID_ATTR = 'googly-img-id';
 export const PICTURE_LIMIT = 15;
 export const DEFAULT_INNER_SIZE = 0.6;
+export const MAX_EYE_ROTATE = 8;
 
 export const NORMAL_EYE = 'normal';
 export const BLUE_EYE = 'blue';

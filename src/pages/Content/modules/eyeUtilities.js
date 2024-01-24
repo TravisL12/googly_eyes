@@ -1,7 +1,26 @@
 import pico from 'picojs';
-import { EYE_TYPES, RANDOM_EYE } from './constants';
-import { randomizer, getFullAngle, b64toBlob, stripPixels } from './utilities';
+import { MAX_EYE_ROTATE, EYE_TYPES, RANDOM_EYE } from './constants';
+import {
+  randomizer,
+  getFullAngle,
+  b64toBlob,
+  stripPixels,
+  angle2Deg,
+} from './utilities';
 import lploc from './lploc';
+
+export const getEyeAngle = (eye1, eye2) => {
+  const [eye1top, eye1left] = eye1;
+  const [eye2top, eye2left] = eye2;
+
+  const eyeX = eye2left - eye1left;
+  const eyeY = eye2top - eye1top;
+
+  const angleRads = Math.atan(eyeY / eyeX);
+  const angle = angle2Deg(angleRads);
+
+  return Math.min(MAX_EYE_ROTATE, Math.abs(angle)) * Math.sign(angle);
+};
 
 const drawEyelid = (eyeType, openAmount, ctx, radius) => {
   const halfW = radius;

@@ -10,6 +10,7 @@ import {
   moveEye,
   getEyeType,
   getEyeTypeFromIdx,
+  getEyeAngle,
 } from './eyeUtilities';
 
 import {
@@ -148,8 +149,24 @@ export class Face {
     const eyeSize = face[2] * EYE_SIZE_FACTOR * scale;
     if (eyeSize > EYE_MIN) {
       const type = getEyeType(eyeType);
-      const leftEye = new Eye(eyeSize, eye1, scale, type, hasEyeLids);
-      const rightEye = new Eye(eyeSize, eye2, scale, type, hasEyeLids);
+      const angle = getEyeAngle(eye1, eye2);
+      console.log(angle, 'eye angle');
+      const leftEye = new Eye({
+        eyeSize,
+        eyeData: eye1,
+        scale,
+        eyeType: type,
+        hasEyeLids,
+        angle,
+      });
+      const rightEye = new Eye({
+        eyeSize,
+        eyeData: eye2,
+        scale,
+        eyeType: type,
+        hasEyeLids,
+        angle,
+      });
 
       this.eyes = [leftEye, rightEye];
       this.container.append(leftEye.eye);
@@ -169,7 +186,8 @@ export class Face {
 }
 
 class Eye {
-  constructor(eyeSize, eyeData, scale, eyeType, hasEyeLids = true) {
+  constructor(params) {
+    const { eyeSize, eyeData, scale, eyeType, hasEyeLids, angle } = params;
     this.eyeType = eyeType || '';
     const halfEye = eyeSize / 2;
     const [posTop, posLeft] = eyeData;
@@ -182,6 +200,7 @@ class Eye {
         width: `${eyeSize}px`,
         top: `${scale * (posTop - halfEye)}px`,
         left: `${scale * (posLeft - halfEye)}px`,
+        transform: `rotate3d(0, 0, 1, ${angle}deg)`,
       },
     });
 

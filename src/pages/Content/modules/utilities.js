@@ -63,7 +63,7 @@ export const throttle = (func, limit) => {
   };
 };
 
-const angle2Deg = (angle) => {
+export const angle2Deg = (angle) => {
   return angle * (180 / Math.PI);
 };
 
