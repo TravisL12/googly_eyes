@@ -1,6 +1,5 @@
-const cascadeurl =
-  'https://raw.githubusercontent.com/nenadmarkus/pico/c2e81f9d23cc11d1a612fd21e4f9de0921a5d0d9/rnt/cascades/facefinder';
-const puplocurl = 'https://drone.nenadmarkus.com/data/blog-stuff/puploc.bin';
+const cascadeurl = 'https://smb4.s3.us-west-2.amazonaws.com/models/facefinder';
+const puplocurl = 'https://smb4.s3.us-west-2.amazonaws.com/models/puploc.bin';
 
 const convertBlobToBase64 = (blob) =>
   new Promise((resolve) => {
