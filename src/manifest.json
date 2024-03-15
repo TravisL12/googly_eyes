@@ -7,10 +7,6 @@
     "default_popup": "popup.html",
     "default_icon": "icon-192.png"
   },
-  "host_permissions": [
-    "https://raw.githubusercontent.com/*",
-    "https://drone.nenadmarkus.com/*"
-  ],
   "permissions": ["storage", "activeTab"],
   "icons": {
     "128": "icon-192.png"
