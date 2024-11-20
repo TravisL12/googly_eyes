@@ -1,5 +1,10 @@
 import pico from 'picojs';
-import { MAX_EYE_ROTATE, EYE_TYPES, RANDOM_EYE } from './constants';
+import {
+  MAX_EYE_ROTATE,
+  EYE_TYPES,
+  RANDOM_EYE,
+  FETCH_IMAGE,
+} from './constants';
 import {
   randomizer,
   getFullAngle,
@@ -151,7 +156,7 @@ export const getFace = async (image) => {
       const generateFaceImageData = () => {
         chrome.runtime.sendMessage(
           {
-            type: 'fetch',
+            type: FETCH_IMAGE,
             url: image.src,
           },
           (data) => {

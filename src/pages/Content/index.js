@@ -3,6 +3,8 @@ import {
   EYE_TYPE_IDX,
   HAS_EYELIDS,
   IS_GOOGLY_ON,
+  LOAD_FACE_API_MODELS,
+  LOAD_FACE_MODELS,
   PICTURE_LIMIT,
   PICTURE_LIMIT_SETTING,
 } from './modules/constants';
@@ -20,7 +22,16 @@ let resizeTimeout;
 const startEyes = () => {
   chrome.runtime.sendMessage(
     {
-      type: 'loadFaceModels',
+      type: LOAD_FACE_API_MODELS,
+    },
+    (response) => {
+      console.log(response, 'FACE api response');
+    }
+  );
+
+  chrome.runtime.sendMessage(
+    {
+      type: LOAD_FACE_MODELS,
     },
     (response) => {
       loadDeps(response);

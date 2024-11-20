@@ -8,7 +8,15 @@ This image
 Becomes
 <img width="824" alt="image" src="https://github.com/TravisL12/googly_eyes/assets/2141322/9a139508-63b8-47b3-ae24-02d2c54e642d">
 
+### Data Flow
 
+Open a page:
+
+- content/index.js startEyes()
+- background: loadModelsType()
+- content/index.js create observers
+- content/index.js new EyesController
+  - load browser local storage
 
 ### How it works
 
@@ -22,5 +30,6 @@ Becomes
 - There's a limit of how many pair of eyes (faces) can be rendered, this value should become a setting so people can adjust as they want.
 
 ##### Built with
-* https://github.com/octohedron/chrome-extension-boilerplate-react
-* https://github.com/nenadmarkus/picojs
+
+- https://github.com/octohedron/chrome-extension-boilerplate-react
+- https://github.com/nenadmarkus/picojs
