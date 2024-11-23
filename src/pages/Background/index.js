@@ -1,11 +1,6 @@
-import faceapi from './face-api.min.js';
-
-console.log(faceapi, 'faceapi');
-
 const {
   FETCH_IMAGE,
   LOAD_FACE_MODELS,
-  LOAD_FACE_API_MODELS,
 } = require('../Content/modules/constants');
 
 const cascadeurl = 'https://smb4.s3.us-west-2.amazonaws.com/models/facefinder';
@@ -20,19 +15,6 @@ const convertBlobToBase64 = (blob) =>
       resolve(base64data);
     };
   });
-
-const loadFaceApiModels = async (sendResponse) => {
-  try {
-    const modelPath = chrome.runtime.getURL('models');
-    await faceapi.nets.tinyFaceDetector.loadFromUri(modelPath);
-    await faceapi.nets.faceLandmark68TinyNet.loadFromUri(modelPath);
-    console.log('Face detection models loaded successfully');
-    return sendResponse;
-  } catch (error) {
-    console.error('Error loading face detection models:', error);
-    return false;
-  }
-};
 
 const loadImage = (message, sendResponse) => {
   fetch(message.url)
@@ -84,10 +66,7 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
       loadModelsType(sendResponse);
       break;
     }
-    case LOAD_FACE_API_MODELS: {
-      loadFaceApiModels(sendResponse);
-      break;
-    }
+
     default:
   }
   return true;

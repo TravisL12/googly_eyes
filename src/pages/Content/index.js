@@ -15,9 +15,23 @@ import {
   loadDeps,
 } from './modules/eyeUtilities';
 import { getStorage } from './modules/storageHelper';
+import faceapi from './modules/face-api';
 
 const EYE_MOVE_EVENTS = ['mousemove', 'wheel'];
 let resizeTimeout;
+
+const loadFaceApiModels = async (sendResponse) => {
+  try {
+    const modelPath = chrome.runtime.getURL('models');
+    await faceapi.nets.tinyFaceDetector.loadFromUri(modelPath);
+    await faceapi.nets.faceLandmark68TinyNet.loadFromUri(modelPath);
+    console.log('Face detection models loaded successfully');
+    return sendResponse;
+  } catch (error) {
+    console.error('Error loading face detection models:', error);
+    return false;
+  }
+};
 
 const startEyes = () => {
   chrome.runtime.sendMessage(
