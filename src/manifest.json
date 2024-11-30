@@ -14,14 +14,21 @@
   "content_scripts": [
     {
       "matches": ["http://*/*", "https://*/*", "<all_urls>"],
-      "js": ["contentScript.bundle.js"],
+      "js": ["contentScript.bundle.js", "lib/face-api.min.js"],
       "css": ["content.styles.css"]
     }
   ],
   "web_accessible_resources": [
     {
-      "resources": ["content.styles.css", "icon-192.png", "favicon.ico"],
+      "resources": [
+        "content.styles.css",
+        "icon-192.png",
+        "favicon.ico",
+        "lib/face-api.min.js",
+        "models/*"
+      ],
       "matches": []
     }
-  ]
+  ],
+  "matches": ["<all_urls>"]
 }

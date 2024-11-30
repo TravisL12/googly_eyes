@@ -1,5 +1,9 @@
 import { TEye } from '../../types';
 
+export const FETCH_IMAGE = 'fetchImage';
+export const LOAD_FACE_MODELS = 'loadFaceModels';
+export const LOAD_FACE_API_MODELS = 'loadFaceApiModels';
+
 export const THROTTLE_DELAY = 30;
 export const EYE_MIN = 10;
 export const EYE_SIZE_FACTOR = 0.23;

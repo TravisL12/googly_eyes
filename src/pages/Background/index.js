@@ -1,3 +1,8 @@
+const {
+  FETCH_IMAGE,
+  LOAD_FACE_MODELS,
+} = require('../Content/modules/constants');
+
 const cascadeurl = 'https://smb4.s3.us-west-2.amazonaws.com/models/facefinder';
 const puplocurl = 'https://smb4.s3.us-west-2.amazonaws.com/models/puploc.bin';
 
@@ -11,7 +16,7 @@ const convertBlobToBase64 = (blob) =>
     };
   });
 
-const fetchType = (message, sendResponse) => {
+const loadImage = (message, sendResponse) => {
   fetch(message.url)
     .then((resp) => {
       return resp.blob();
@@ -53,15 +58,16 @@ const loadModelsType = (sendResponse) => {
 
 chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
   switch (message.type) {
-    case 'fetch': {
-      fetchType(message, sendResponse);
+    case FETCH_IMAGE: {
+      loadImage(message, sendResponse);
       break;
     }
-
-    case 'loadFaceModels': {
+    case LOAD_FACE_MODELS: {
       loadModelsType(sendResponse);
       break;
     }
+
+    default:
   }
   return true;
 });
