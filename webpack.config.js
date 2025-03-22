@@ -183,8 +183,8 @@ var options = {
     new CopyWebpackPlugin({
       patterns: [
         {
-          from: 'src/models',
-          to: path.join(__dirname, 'build/models'),
+          from: path.join(__dirname, 'src', 'models'),
+          to: path.join(__dirname, 'build', 'models'),
           force: true,
         },
       ],
@@ -192,8 +192,8 @@ var options = {
     new CopyWebpackPlugin({
       patterns: [
         {
-          from: 'src/lib',
-          to: path.join(__dirname, 'build/lib'),
+          from: path.join(__dirname, 'src', 'lib'),
+          to: path.join(__dirname, 'build', 'lib'),
           force: true,
         },
       ],

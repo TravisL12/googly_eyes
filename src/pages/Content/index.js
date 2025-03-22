@@ -9,31 +9,33 @@ import {
   PICTURE_LIMIT_SETTING,
 } from './modules/constants';
 import { shuffle } from './modules/utilities';
-import {
-  getEyeType,
-  getEyeTypeFromIdx,
-  loadDeps,
-} from './modules/eyeUtilities';
+import { getEyeType, getEyeTypeFromIdx } from './modules/eyeUtilities';
 import { getStorage } from './modules/storageHelper';
 import faceapi from './modules/face-api';
 
 const EYE_MOVE_EVENTS = ['mousemove', 'wheel'];
 let resizeTimeout;
 
-const loadFaceApiModels = async (sendResponse) => {
+const loadFaceApiModels = async () => {
   try {
     const modelPath = chrome.runtime.getURL('models');
     await faceapi.nets.tinyFaceDetector.loadFromUri(modelPath);
     await faceapi.nets.faceLandmark68TinyNet.loadFromUri(modelPath);
     console.log('Face detection models loaded successfully');
-    return sendResponse;
+    return true;
   } catch (error) {
     console.error('Error loading face detection models:', error);
     return false;
   }
 };
 
-const startEyes = () => {
+const startEyes = async () => {
+  const loaded = await loadFaceApiModels();
+  if (!loaded) {
+    console.log('did not load!');
+    return;
+  }
+
   chrome.runtime.sendMessage(
     {
       type: LOAD_FACE_API_MODELS,
@@ -48,7 +50,7 @@ const startEyes = () => {
       type: LOAD_FACE_MODELS,
     },
     (response) => {
-      loadDeps(response);
+      // loadDeps(response);
 
       const intersectObserver = new IntersectionObserver(
         (entries) => {
