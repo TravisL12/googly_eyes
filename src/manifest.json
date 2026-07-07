@@ -14,7 +14,7 @@
   "content_scripts": [
     {
       "matches": ["http://*/*", "https://*/*", "<all_urls>"],
-      "js": ["lib/face-api.js", "contentScript.bundle.js"],
+      "js": ["contentScript.bundle.js"],
       "css": ["content.styles.css"]
     }
   ],

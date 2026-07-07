@@ -1,3 +1,4 @@
+import * as faceapi from '@vladmandic/face-api';
 import {
   MAX_EYE_ROTATE,
   EYE_TYPES,
@@ -5,10 +6,6 @@ import {
   FETCH_IMAGE,
 } from './constants';
 import { randomizer, b64toBlob, angle2Deg } from './utilities';
-
-// face-api.js is injected as a separate content script (see manifest.json),
-// so it lives on the shared isolated-world global rather than being imported.
-const getFaceApi = () => window.faceapi;
 
 export const getEyeAngle = (eye1, eye2) => {
   const [eye1top, eye1left] = eye1;
@@ -160,10 +157,6 @@ const eyeCenter = (points) => {
 };
 
 export const getFace = async (image) => {
-  const faceapi = getFaceApi();
-  if (!faceapi) {
-    return [];
-  }
   try {
     const canvas = await imageToCanvas(image);
     const detections = await faceapi

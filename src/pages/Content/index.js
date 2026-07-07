@@ -1,3 +1,4 @@
+import * as faceapi from '@vladmandic/face-api';
 import EyesController from './modules/application';
 import {
   EYE_TYPE_IDX,
@@ -13,14 +14,7 @@ import { getStorage } from './modules/storageHelper';
 const EYE_MOVE_EVENTS = ['mousemove', 'wheel'];
 let resizeTimeout;
 
-// face-api.js is injected ahead of this script (see manifest.json content_scripts
-// ordering), so it is available on the shared isolated-world global.
 const loadFaceApiModels = async () => {
-  const faceapi = window.faceapi;
-  if (!faceapi) {
-    console.error('face-api.js global not found — check manifest injection order');
-    return false;
-  }
   try {
     const modelPath = chrome.runtime.getURL('models');
     await faceapi.nets.tinyFaceDetector.loadFromUri(modelPath);
