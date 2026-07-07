@@ -67,27 +67,6 @@ export const angle2Deg = (angle) => {
   return angle * (180 / Math.PI);
 };
 
-const angle2Rads = (angle) => {
-  return angle / (180 / Math.PI);
-};
-
-export const getFullAngle = (x, y) => {
-  const angle = Math.atan(y / x);
-  const angleDeg = angle2Deg(angle);
-
-  if (x > 0 && y > 0) {
-    return angle;
-  }
-  if (x <= 0 && y > 0) {
-    return angle2Rads(180 + angleDeg);
-  }
-  if (x <= 0 && y <= 0) {
-    return angle2Rads(180 + angleDeg);
-  }
-
-  return angle2Rads(360 + angleDeg);
-};
-
 // https://stackoverflow.com/a/16245768
 export const b64toBlob = (data, sliceSize = 512) => {
   const [contentType, b64Data] = data.split(';base64,');

@@ -38,6 +38,7 @@ const Eye = ({ move, size, type, hasEyeLids }: TProps) => {
       style={{
         height: size,
         width: size,
+        border: `1px solid ${type.innerColor}`,
       }}
     >
       <div

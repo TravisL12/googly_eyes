@@ -1,13 +1,11 @@
-import pico from 'picojs';
-import { MAX_EYE_ROTATE, EYE_TYPES, RANDOM_EYE } from './constants';
+import * as faceapi from '@vladmandic/face-api';
 import {
-  randomizer,
-  getFullAngle,
-  b64toBlob,
-  stripPixels,
-  angle2Deg,
-} from './utilities';
-import lploc from './lploc';
+  MAX_EYE_ROTATE,
+  EYE_TYPES,
+  RANDOM_EYE,
+  FETCH_IMAGE,
+} from './constants';
+import { randomizer, b64toBlob, angle2Deg } from './utilities';
 
 export const getEyeAngle = (eye1, eye2) => {
   const [eye1top, eye1left] = eye1;
@@ -74,180 +72,111 @@ const drawEyelid = (eyeType, openAmount, ctx, radius) => {
 export const moveEye = ({ moveEvent, eye, inner, eyelid }) => {
   const eyeBound = eye.getBoundingClientRect();
   const innerBound = inner.getBoundingClientRect();
-  const ctx = eyelid?.getContext('2d');
   const radius = eyeBound.width / 2;
   const innerRadius = innerBound.width / 2;
+  const maxOffset = radius - innerRadius; // how far the pupil center may travel
 
-  const eyeType = [...EYE_TYPES, RANDOM_EYE].find(
-    ({ name }) => name === Array.from(eye.classList)[1]
-  );
+  // Vector from the eye center to the cursor, in viewport space.
+  const dx = moveEvent.clientX - (eyeBound.left + radius);
+  const dy = moveEvent.clientY - (eyeBound.top + radius);
+  const dist = Math.hypot(dx, dy) || 1; // guard divide-by-zero at dead center
 
-  const x = moveEvent.clientX - innerRadius;
-  const y = moveEvent.clientY - innerRadius;
+  // Shrink the vector onto the travel ring; inside the ring this is a no-op
+  // (scale === 1) so the pupil sits directly under the cursor.
+  const scale = Math.min(dist, maxOffset) / dist;
+  const left = maxOffset + dx * scale;
+  const top = maxOffset + dy * scale;
 
-  const mouseX = x - eyeBound.left - innerRadius;
-  const mouseY = y - eyeBound.top - innerRadius;
-  const mouseRadius = Math.sqrt(mouseX ** 2 + mouseY ** 2);
+  inner.style.left = `${left}px`;
+  inner.style.top = `${top}px`;
 
-  const deltaRadius = radius - innerRadius;
-
-  const isInsideEye = deltaRadius > mouseRadius;
-  if (isInsideEye) {
-    inner.style['left'] = `${mouseX + innerRadius}px`;
-    inner.style['top'] = `${mouseY + innerRadius}px`;
-  } else {
-    const opposite = eyeBound.top + deltaRadius - y;
-    const adjacent = x - (eyeBound.left + deltaRadius);
-
-    const angle = getFullAngle(adjacent, opposite);
-
-    const yMax = deltaRadius * Math.sin(angle);
-    const xMax = deltaRadius * Math.cos(angle);
-
-    const eyeLeft = deltaRadius + xMax;
-
-    const isAtBottom = yMax === -1 * deltaRadius;
-    const isAtTop = yMax === deltaRadius;
-    const eyeTop = isAtBottom
-      ? 0
-      : isAtTop
-      ? 2 * deltaRadius
-      : deltaRadius - yMax;
-
-    if (eyelid && ctx) {
-      const eyeOverlap = eyeType.overlap ? eyeBound.width * eyeType.overlap : 0;
-      drawEyelid(eyeType, eyeBound.width - eyeTop - eyeOverlap, ctx, radius);
-    }
-
-    inner.style['top'] = `${eyeTop}px`;
-    inner.style['left'] = `${eyeLeft}px`;
+  if (eyelid) {
+    const ctx = eyelid.getContext('2d');
+    const eyeType = [...EYE_TYPES, RANDOM_EYE].find(
+      ({ name }) => name === Array.from(eye.classList)[1]
+    );
+    const eyeOverlap = eyeType?.overlap ? eyeBound.width * eyeType.overlap : 0;
+    // `top` is 0 (looking up) to 2*maxOffset (looking down), same as before.
+    drawEyelid(eyeType, eyeBound.width - top - eyeOverlap, ctx, radius);
   }
 };
 
-export const loadDeps = ({ cascBytes, pupBytes }) => {
-  loadCascade(Object.values(cascBytes));
-  loadPupil(Object.values(pupBytes));
-  return true;
-};
+// Detection uses the face-api.js TinyFaceDetector for the face box and the
+// tiny 68-point landmark model for precise eye positions. The models are
+// loaded once from loadFaceApiModels() in ../index.js before detection runs.
+const DETECTOR_OPTIONS = { inputSize: 416, scoreThreshold: 0.5 };
 
-let classifyRegion;
-const loadCascade = (bytes) => {
-  classifyRegion = pico.unpack_cascade(bytes);
-  console.log('* cascade loaded');
-  return true;
-};
+// Cross-origin images taint a canvas, which breaks tfjs pixel reads, so the
+// background service worker proxies the image and returns it as base64. We draw
+// it onto a canvas at its natural pixel size — the same space the renderer
+// scales from (see the `scale` calc in application.js Face).
+const imageToCanvas = (image) =>
+  new Promise((resolve, reject) => {
+    const build = () => {
+      chrome.runtime.sendMessage(
+        { type: FETCH_IMAGE, url: image.src },
+        (data) => {
+          if (!data?.blob64) {
+            reject(new Error('no image data returned from background'));
+            return;
+          }
+          const urlObj = URL.createObjectURL(b64toBlob(data.blob64));
+          const img = new Image();
+          img.onload = () => {
+            const canvas = document.createElement('canvas');
+            canvas.width = img.naturalWidth;
+            canvas.height = img.naturalHeight;
+            canvas.getContext('2d').drawImage(img, 0, 0);
+            URL.revokeObjectURL(urlObj);
+            resolve(canvas);
+          };
+          img.onerror = () => {
+            URL.revokeObjectURL(urlObj);
+            reject(new Error('proxied image failed to load'));
+          };
+          img.src = urlObj;
+        }
+      );
+    };
 
-let pupilLocation;
-const loadPupil = (bytes) => {
-  pupilLocation = lploc.unpack_localizer(bytes);
-  console.log('* puploc loaded');
-  return true;
+    if (image.complete) {
+      build();
+    } else {
+      image.onload = build;
+    }
+  });
+
+// Average a set of {x, y} landmark points into a [top, left] pair, matching the
+// [posTop, posLeft] ordering the renderer expects for each eye.
+const eyeCenter = (points) => {
+  const sum = points.reduce(
+    (acc, p) => ({ x: acc.x + p.x, y: acc.y + p.y }),
+    { x: 0, y: 0 }
+  );
+  return [sum.y / points.length, sum.x / points.length];
 };
 
 export const getFace = async (image) => {
-  let width, height;
   try {
-    const prom = new Promise(async (resolve) => {
-      const generateFaceImageData = () => {
-        chrome.runtime.sendMessage(
-          {
-            type: 'fetch',
-            url: image.src,
-          },
-          (data) => {
-            const computed = getComputedStyle(image);
-            width = stripPixels(computed.width);
-            height = stripPixels(computed.height);
+    const canvas = await imageToCanvas(image);
+    const detections = await faceapi
+      .detectAllFaces(canvas, new faceapi.TinyFaceDetectorOptions(DETECTOR_OPTIONS))
+      .withFaceLandmarks(true); // true => use the lightweight tiny landmark model
 
-            const blob = b64toBlob(data.blob64);
-            const urlObj = URL.createObjectURL(blob);
-
-            const img = new Image();
-            img.src = urlObj;
-
-            img.onload = function () {
-              const canvas = document.createElement('canvas');
-              canvas.height = height;
-              canvas.width = width;
-              URL.revokeObjectURL(img.src);
-              const ctx = canvas.getContext('2d');
-              ctx.drawImage(img, 0, 0);
-              resolve(ctx);
-            };
-          }
-        );
+    return detections.map(({ detection, landmarks }) => {
+      const { box } = detection;
+      // The renderer only reads face[2] (a face-size measure used to scale the
+      // eyes); face[0]/face[1] are kept for parity with the old shape.
+      const face = [box.x, box.y, box.width];
+      return {
+        face,
+        eye1: eyeCenter(landmarks.getLeftEye()),
+        eye2: eyeCenter(landmarks.getRightEye()),
       };
-
-      if (image.complete) {
-        generateFaceImageData();
-      } else {
-        image.onload = () => {
-          generateFaceImageData();
-        };
-      }
     });
-    const respCtx = await prom;
-    const imgData = respCtx.getImageData(0, 0, width, height).data;
-    return findFaceData(imgData, width, height);
   } catch (err) {
-    console.log(err, 'canvas loading error');
-    return Promise.resolve([]); // I need typescript
-  }
-};
-
-const rgbaToGrayscale = (rgba, nrows, ncols) => {
-  var gray = new Uint8Array(nrows * ncols);
-  for (let r = 0; r < nrows; ++r)
-    for (let c = 0; c < ncols; ++c)
-      gray[r * ncols + c] =
-        (2 * rgba[r * 4 * ncols + 4 * c + 0] +
-          7 * rgba[r * 4 * ncols + 4 * c + 1] +
-          1 * rgba[r * 4 * ncols + 4 * c + 2]) /
-        10;
-  return gray;
-};
-
-const getEye = (r, s, c, imageData) => {
-  const [retina, center] = pupilLocation(r, c, s, 63, imageData);
-  if (retina >= 0 && center >= 0) {
-    return [retina, center];
-  }
-  return;
-};
-
-const findFaceData = (imgData, width, height) => {
-  try {
-    const imageData = {
-      pixels: rgbaToGrayscale(imgData, height, width),
-      nrows: height,
-      ncols: width,
-      ldim: width,
-    };
-    const params = {
-      shiftfactor: 0.1, // move the detection window by 10% of its size
-      minsize: 50, // minimum size of a face (not suitable for real-time detection, set it to 100 in that case)
-      maxsize: 2500, // maximum size of a face
-      scalefactor: 1.1, // for multiscale processing: resize the detection window by 10% when moving to the higher scale
-    };
-
-    let dets = pico.run_cascade(imageData, classifyRegion, params);
-    dets = pico.cluster_detections(dets, 0.2); // set IoU threshold to 0.2
-    const qthresh = 5.0; // this constant is empirical: other cascades might require a different one
-
-    const output = [];
-    for (let i = 0; i < dets.length; ++i) {
-      const face = dets[i];
-      if (face[3] > qthresh) {
-        const r = face[0] - 0.075 * face[2];
-        const s = 0.35 * face[2];
-        const eye1 = getEye(r, s, face[1] - 0.175 * face[2], imageData);
-        const eye2 = getEye(r, s, face[1] + 0.175 * face[2], imageData);
-        output.push({ face, eye1, eye2 });
-      }
-    }
-    return output;
-  } catch (err) {
-    console.log(err, 'cant load image');
+    console.log(err, 'face-api detection error');
+    return [];
   }
 };
 

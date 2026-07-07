@@ -1,5 +1,7 @@
 import { TEye } from '../../types';
 
+export const FETCH_IMAGE = 'fetchImage';
+
 export const THROTTLE_DELAY = 30;
 export const EYE_MIN = 10;
 export const EYE_SIZE_FACTOR = 0.23;
@@ -15,7 +17,7 @@ export const STONED_EYE = 'stoned';
 export const SLEEPY_EYE = 'sleepy';
 export const DROOPY_EYE = 'droopy';
 export const CAT_EYE = 'cat';
-const BLACK = '#333';
+const BLACK = '#000';
 export const RANDOM_EYE: TEye = {
   name: 'random',
   innerSize: 1 * DEFAULT_INNER_SIZE,
