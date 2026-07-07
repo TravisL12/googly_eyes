@@ -13,17 +13,23 @@ Becomes
 Open a page:
 
 - content/index.js startEyes()
-- background: loadModelsType()
+- content/index.js loadFaceApiModels() — load the face-api.js models from the bundled `models/` weights
 - content/index.js create observers
 - content/index.js new EyesController
   - load browser local storage
 
+Per image detected on screen:
+
+- eyeUtilities.js getFace() asks the Background script to fetch the image and return it as base64 (avoids CORS-tainted canvases)
+- the image is drawn to a natural-size canvas and passed to face-api.js
+- TinyFaceDetector finds face boxes, the tiny 68-point landmark model locates each eye, and those points are mapped into the eye positions the renderer uses
+
 ### How it works
 
-- The Content script requests the Background script to load the face finding models.
-- Once loaded an Intersection Observer is started to manage images scrolling in and out of the viewport.
-- A Mutation Observer is used to update the intersection observer for any lazy loaded images.
-- The intersection observer is managing when to render eyes on images, and once off screen they are not rendered anymore.
+- Face detection runs entirely in the content script via [face-api.js](https://github.com/justadudewhohacks/face-api.js) (TinyFaceDetector + tiny 68-point landmarks). The library is injected ahead of the content bundle and the model weights ship in `src/models/`.
+- The Background script's only job is proxying image fetches to base64 so cross-origin images can be read off a canvas.
+- An Intersection Observer manages images scrolling in and out of the viewport; eyes are only rendered while an image is on screen.
+- A Mutation Observer updates the intersection observer for any lazy loaded images.
 - The eyes and the image they are attached to have a shared ID value that allows them to be removed at the same time.
 - Resizing the window clears everything and starts over as the positions of images likely changed and need to be recalculated.
 - The eye movements are throttled to fire every 30ms for performance, this coupled with the intersection observer allows for really smooth performance.
@@ -32,4 +38,4 @@ Open a page:
 ##### Built with
 
 - https://github.com/octohedron/chrome-extension-boilerplate-react
-- https://github.com/nenadmarkus/picojs
+- https://github.com/justadudewhohacks/face-api.js

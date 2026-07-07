@@ -51,16 +51,17 @@ export default class EyesController {
   }
 
   initialLoad(options) {
-    this[IS_GOOGLY_ON] = options?.[IS_GOOGLY_ON] || this[IS_GOOGLY_ON];
+    // Use `??` so a stored `false` is respected instead of falling back to the
+    // default; `undefined` (no args, e.g. on resize) keeps the current value.
+    this[IS_GOOGLY_ON] = options?.[IS_GOOGLY_ON] ?? this[IS_GOOGLY_ON];
     if (!this[IS_GOOGLY_ON]) {
       this.removePreviousFaceElements();
       return;
     }
-    const isEyelidsOn = options?.[HAS_EYELIDS];
-    this[HAS_EYELIDS] = isEyelidsOn || this[HAS_EYELIDS];
+    this[HAS_EYELIDS] = options?.[HAS_EYELIDS] ?? this[HAS_EYELIDS];
 
-    const pictureLimit = options?.[PICTURE_LIMIT_SETTING];
-    this[PICTURE_LIMIT] = pictureLimit || this[PICTURE_LIMIT];
+    this[PICTURE_LIMIT] =
+      options?.[PICTURE_LIMIT_SETTING] ?? this[PICTURE_LIMIT];
 
     this.eyeType = getEyeTypeFromIdx(options?.[EYE_TYPE_IDX]);
 
@@ -201,6 +202,7 @@ class Eye {
         top: `${scale * (posTop - halfEye)}px`,
         left: `${scale * (posLeft - halfEye)}px`,
         transform: `rotate3d(0, 0, 1, ${angle}deg)`,
+        border: `1px solid ${eyeType.innerColor}`,
       },
     });
 
