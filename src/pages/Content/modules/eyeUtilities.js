@@ -4,7 +4,7 @@ import {
   RANDOM_EYE,
   FETCH_IMAGE,
 } from './constants';
-import { randomizer, getFullAngle, b64toBlob, angle2Deg } from './utilities';
+import { randomizer, b64toBlob, angle2Deg } from './utilities';
 
 // face-api.js is injected as a separate content script (see manifest.json),
 // so it lives on the shared isolated-world global rather than being imported.
@@ -75,53 +75,32 @@ const drawEyelid = (eyeType, openAmount, ctx, radius) => {
 export const moveEye = ({ moveEvent, eye, inner, eyelid }) => {
   const eyeBound = eye.getBoundingClientRect();
   const innerBound = inner.getBoundingClientRect();
-  const ctx = eyelid?.getContext('2d');
   const radius = eyeBound.width / 2;
   const innerRadius = innerBound.width / 2;
+  const maxOffset = radius - innerRadius; // how far the pupil center may travel
 
-  const eyeType = [...EYE_TYPES, RANDOM_EYE].find(
-    ({ name }) => name === Array.from(eye.classList)[1]
-  );
+  // Vector from the eye center to the cursor, in viewport space.
+  const dx = moveEvent.clientX - (eyeBound.left + radius);
+  const dy = moveEvent.clientY - (eyeBound.top + radius);
+  const dist = Math.hypot(dx, dy) || 1; // guard divide-by-zero at dead center
 
-  const x = moveEvent.clientX - innerRadius;
-  const y = moveEvent.clientY - innerRadius;
+  // Shrink the vector onto the travel ring; inside the ring this is a no-op
+  // (scale === 1) so the pupil sits directly under the cursor.
+  const scale = Math.min(dist, maxOffset) / dist;
+  const left = maxOffset + dx * scale;
+  const top = maxOffset + dy * scale;
 
-  const mouseX = x - eyeBound.left - innerRadius;
-  const mouseY = y - eyeBound.top - innerRadius;
-  const mouseRadius = Math.sqrt(mouseX ** 2 + mouseY ** 2);
+  inner.style.left = `${left}px`;
+  inner.style.top = `${top}px`;
 
-  const deltaRadius = radius - innerRadius;
-
-  const isInsideEye = deltaRadius > mouseRadius;
-  if (isInsideEye) {
-    inner.style['left'] = `${mouseX + innerRadius}px`;
-    inner.style['top'] = `${mouseY + innerRadius}px`;
-  } else {
-    const opposite = eyeBound.top + deltaRadius - y;
-    const adjacent = x - (eyeBound.left + deltaRadius);
-
-    const angle = getFullAngle(adjacent, opposite);
-
-    const yMax = deltaRadius * Math.sin(angle);
-    const xMax = deltaRadius * Math.cos(angle);
-
-    const eyeLeft = deltaRadius + xMax;
-
-    const isAtBottom = yMax === -1 * deltaRadius;
-    const isAtTop = yMax === deltaRadius;
-    const eyeTop = isAtBottom
-      ? 0
-      : isAtTop
-      ? 2 * deltaRadius
-      : deltaRadius - yMax;
-
-    if (eyelid && ctx) {
-      const eyeOverlap = eyeType.overlap ? eyeBound.width * eyeType.overlap : 0;
-      drawEyelid(eyeType, eyeBound.width - eyeTop - eyeOverlap, ctx, radius);
-    }
-
-    inner.style['top'] = `${eyeTop}px`;
-    inner.style['left'] = `${eyeLeft}px`;
+  if (eyelid) {
+    const ctx = eyelid.getContext('2d');
+    const eyeType = [...EYE_TYPES, RANDOM_EYE].find(
+      ({ name }) => name === Array.from(eye.classList)[1]
+    );
+    const eyeOverlap = eyeType?.overlap ? eyeBound.width * eyeType.overlap : 0;
+    // `top` is 0 (looking up) to 2*maxOffset (looking down), same as before.
+    drawEyelid(eyeType, eyeBound.width - top - eyeOverlap, ctx, radius);
   }
 };
 
