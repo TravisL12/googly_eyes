@@ -102,9 +102,9 @@ export const moveEye = ({ moveEvent, eye, inner, eyelid }) => {
 };
 
 // Detection uses the face-api.js TinyFaceDetector for the face box and the
-// tiny 68-point landmark model for precise eye positions. The models are
+// full 68-point landmark model for precise eye positions. The models are
 // loaded once from loadFaceApiModels() in ../index.js before detection runs.
-const DETECTOR_OPTIONS = { inputSize: 416, scoreThreshold: 0.5 };
+const DETECTOR_OPTIONS = { inputSize: 512, scoreThreshold: 0.5 };
 
 // Cross-origin images taint a canvas, which breaks tfjs pixel reads, so the
 // background service worker proxies the image and returns it as base64. We draw
@@ -149,10 +149,10 @@ const imageToCanvas = (image) =>
 // Average a set of {x, y} landmark points into a [top, left] pair, matching the
 // [posTop, posLeft] ordering the renderer expects for each eye.
 const eyeCenter = (points) => {
-  const sum = points.reduce(
-    (acc, p) => ({ x: acc.x + p.x, y: acc.y + p.y }),
-    { x: 0, y: 0 }
-  );
+  const sum = points.reduce((acc, p) => ({ x: acc.x + p.x, y: acc.y + p.y }), {
+    x: 0,
+    y: 0,
+  });
   return [sum.y / points.length, sum.x / points.length];
 };
 
@@ -160,8 +160,11 @@ export const getFace = async (image) => {
   try {
     const canvas = await imageToCanvas(image);
     const detections = await faceapi
-      .detectAllFaces(canvas, new faceapi.TinyFaceDetectorOptions(DETECTOR_OPTIONS))
-      .withFaceLandmarks(true); // true => use the lightweight tiny landmark model
+      .detectAllFaces(
+        canvas,
+        new faceapi.TinyFaceDetectorOptions(DETECTOR_OPTIONS)
+      )
+      .withFaceLandmarks(); // full 68-point landmark model (pass true for the tiny one)
 
     return detections.map(({ detection, landmarks }) => {
       const { box } = detection;
