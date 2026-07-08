@@ -18,7 +18,7 @@ const loadFaceApiModels = async () => {
   try {
     const modelPath = chrome.runtime.getURL('models');
     await faceapi.nets.tinyFaceDetector.loadFromUri(modelPath);
-    await faceapi.nets.faceLandmark68TinyNet.loadFromUri(modelPath);
+    await faceapi.nets.faceLandmark68Net.loadFromUri(modelPath);
     console.log('Face detection models loaded successfully');
     return true;
   } catch (error) {
